@@ -32,9 +32,13 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['bowerInstall']
       },
+      coffee: {
+        files: ['src/scripts/{,*/}*.coffee'],
+        tasks: ['coffee']
+      },
       js: {
         files: ['<%= config.app %>/scripts/{,*/}*.js'],
-        tasks: ['jshint'],
+        tasks: [],
         options: {
           livereload: true
         }
@@ -134,6 +138,19 @@ module.exports = function (grunt) {
         ]
       }
     },
+
+    // compile coffee to js
+    coffee: {
+      compileWithMaps: {
+        options: {
+          sourceMap: true
+        },
+        files: {
+          'app/scripts/contentscript.js': ['src/scripts/contentscripts/*.coffee']
+        }
+      }
+    },
+
 
     // Reads HTML for usemin blocks to enable smart builds that automatically
     // concat, minify and revision files. Creates configurations in memory so
@@ -296,7 +313,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('debug', function () {
     grunt.task.run([
-      'jshint',
+      // 'jshint',
       'concurrent:chrome',
       'connect:chrome',
       'watch'
