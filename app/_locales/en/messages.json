@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Ganja",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "An extension that adds things to Kinja.",
+    "description": "The description of the application"
+  }
+}
