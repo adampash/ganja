@@ -33,7 +33,7 @@ module.exports = function (grunt) {
         tasks: ['bowerInstall']
       },
       coffee: {
-        files: ['src/scripts/{,*/}*.coffee'],
+        files: ['src/scripts/socializer.coffee', 'src/scripts/{,*/}*.coffee'],
         tasks: ['coffee']
       },
       js: {

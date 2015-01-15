@@ -1,11 +1,43 @@
-check =
+helper =
+  retrieveWindowVariables: (variables) ->
+    ret = {}
+
+    scriptContent = ""
+    for currVariable in variables
+      scriptContent += "if (typeof " + currVariable + " !== 'undefined') document.body.setAttribute('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
+
+    script = document.createElement('script')
+    script.id = 'tmpScript'
+    script.appendChild(document.createTextNode(scriptContent))
+    (document.body || document.head || document.documentElement).appendChild(script)
+
+    for currVariable in variables
+      ret[currVariable] = JSON.parse $("body").attr("tmp_" + currVariable)
+      $("body").removeAttr("tmp_" + currVariable)
+
+    $("#tmpScript").remove()
+
+    ret
+
+Socializer =
+  init: (@kinja) ->
+    @editing = false
+    @interval = setInterval =>
+      unless @editorVisible() == @editing
+        @editing = @editorVisible()
+        if @editing
+          view.addFields()
+        # else
+        #   view.removeFields()
+    , 500
+
   editorVisible: ->
     $('div.editor:visible').length != 0
 
   countdown: ->
     140 - 24 - $('#tweet-box').val().length
 
-  getBlogs: ->
+  getBlogs: (complete) ->
     console.log 'getting blogs'
     urls = []
     sites = []
@@ -13,7 +45,7 @@ check =
     if yourBlogs.length is 0
       console.log 'no blogs to get'
       return setTimeout =>
-        @getBlogs()
+        @getBlogs(complete)
       , 1000
     yourBlogs.each (index) ->
       $el = $(@)
@@ -27,18 +59,22 @@ check =
     for url, index in urls
       blogs[sites[index]] = url
 
-editing = false
+    complete(blogs)
 
-check.getBlogs()
+  getURL: ->
+    window.location.href.replace(/\/preview\//, '/').split('?')[0]
 
-interval = setInterval ->
-  unless check.editorVisible() == editing
-    editing = check.editorVisible()
-    if editing
-      view.addFields()
-    else
-      view.removeFields()
-, 500
+  getPublishTime: ->
+    @kinja.postMeta.post.publishTimeMillis
+
+  verifyTimeSync: ->
+
+  saveSocial: ->
+    $('#social-save-status').show().text("Saving...")
+    setTimeout ->
+      $('#social-save-status').text("Saved").delay(500).fadeOut()
+      $('#tweet-box').focus()
+    , 1000
 
 view =
   addFields: ->
@@ -52,7 +88,7 @@ view =
             </div>
             <div class="columns medium-11 small-11">
               <textarea id="tweet-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="6"></textarea>
-              <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px;"></span>
+              <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
             </div>
           </div>
         </div>
@@ -66,16 +102,42 @@ view =
             </div>
           </div>
         </div>
+
+        <div style="margin-top: 10px;" class="columns small-12 medium-4 medium-push-8">
+          <div class="selector-container right"> 
+            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 40px; font-size: 14px;"></div>
+            <button id="social-save" class="button tiny primary submit flex-item" tabindex="8">Save Social</button>
+          </div>
+        </div>
+
       """
     )
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
+    $('#social-save').on 'click', ->
+      Socializer.saveSocial()
     setTimeout =>
       @setCharCount()
     , 500
 
   setCharCount: ->
-    $('.tweet-char-counter').text check.countdown()
+    $('.tweet-char-counter').text Socializer.countdown()
 
   removeFields: ->
     console.log 'remove fields now'
+
+init = ->
+  pageWin = helper.retrieveWindowVariables(['kinja'])
+  if pageWin.kinja? and pageWin.kinja.postMeta?
+    Socializer.init(pageWin.kinja)
+    blogs = {}
+    Socializer.getBlogs (_blogs) ->
+      blogs = _blogs
+      console.log blogs
+    console.log Socializer.getPublishTime(pageWin.kinja)
+  else
+    setTimeout ->
+      init()
+    , 100
+
+init()

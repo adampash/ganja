@@ -10,7 +10,7 @@ view =
             </div>
             <div class="columns medium-11 small-11">
               <textarea id="tweet-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="6"></textarea>
-              <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px;"></span>
+              <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
             </div>
           </div>
         </div>
@@ -24,16 +24,26 @@ view =
             </div>
           </div>
         </div>
+
+        <div style="margin-top: 10px;" class="columns small-12 medium-4 medium-push-8">
+          <div class="selector-container right"> 
+            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 40px; font-size: 14px;"></div>
+            <button id="social-save" class="button tiny primary submit flex-item" tabindex="8">Save Social</button>
+          </div>
+        </div>
+
       """
     )
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
+    $('#social-save').on 'click', ->
+      Socializer.saveSocial()
     setTimeout =>
       @setCharCount()
     , 500
 
   setCharCount: ->
-    $('.tweet-char-counter').text check.countdown()
+    $('.tweet-char-counter').text Socializer.countdown()
 
   removeFields: ->
     console.log 'remove fields now'
