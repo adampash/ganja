@@ -5,10 +5,22 @@ Socializer =
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          view.addFields()
+          view.addFields =>
+            @fetchSocial(@getPostId())
         # else
         #   view.removeFields()
     , 500
+
+  fetchSocial: (postId) ->
+    $.ajax
+      method: "GET"
+      url: "http://localhost:3000/stories/#{postId}.json"
+      success: (data) =>
+        $('#tweet-box').val(data.tweet)
+        $('#facebook-box').val(data.fb_post)
+        @setStatusMessage(data)
+      error: ->
+      complete: ->
 
   editorVisible: ->
     $('div.editor:visible').length != 0
@@ -67,13 +79,26 @@ Socializer =
     domain: @getDomain()
     kinja_id: @getPostId()
 
-  saveSocial: ->
+  saveSocial: (opts) ->
     $('#social-save-status').show().text("Saving...")
+    params = @getData()
+    params.set_to_publish = opts.set_to_publish
     $.ajax
       url: "http://localhost:3000/stories"
       method: "POST"
-      data: @getData()
-    setTimeout ->
-      $('#social-save-status').text("Saved").delay(500).fadeOut()
-      $('#tweet-box').focus()
-    , 1000
+      data: params
+      success: (data) =>
+        # $('#social-save-status').text("Saved")
+        $('#tweet-box').focus()
+        # setTimeout =>
+        @setStatusMessage(data)
+        # , 500
+      error: ->
+        $('#social-save-status').text("Something went wrong").delay(500).fadeOut()
+        $('#tweet-box').focus()
+
+  setStatusMessage: (data) ->
+    if data.set_to_publish
+      $('#social-save-status').text "Social posts set to publish at #{new Date(data.publish_at)}"
+    else
+      $('#social-save-status').text "Social posts in draft"

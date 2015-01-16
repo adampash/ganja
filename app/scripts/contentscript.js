@@ -33,11 +33,28 @@
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
-              return view.addFields();
+              return view.addFields(function() {
+                return _this.fetchSocial(_this.getPostId());
+              });
             }
           }
         };
       })(this), 500);
+    },
+    fetchSocial: function(postId) {
+      return $.ajax({
+        method: "GET",
+        url: "http://localhost:3000/stories/" + postId + ".json",
+        success: (function(_this) {
+          return function(data) {
+            $('#tweet-box').val(data.tweet);
+            $('#facebook-box').val(data.fb_post);
+            return _this.setStatusMessage(data);
+          };
+        })(this),
+        error: function() {},
+        complete: function() {}
+      });
     },
     editorVisible: function() {
       return $('div.editor:visible').length !== 0;
@@ -102,37 +119,61 @@
         kinja_id: this.getPostId()
       };
     },
-    saveSocial: function() {
+    saveSocial: function(opts) {
+      var params;
       $('#social-save-status').show().text("Saving...");
-      $.ajax({
+      params = this.getData();
+      params.set_to_publish = opts.set_to_publish;
+      return $.ajax({
         url: "http://localhost:3000/stories",
         method: "POST",
-        data: this.getData()
+        data: params,
+        success: (function(_this) {
+          return function(data) {
+            $('#tweet-box').focus();
+            return _this.setStatusMessage(data);
+          };
+        })(this),
+        error: function() {
+          $('#social-save-status').text("Something went wrong").delay(500).fadeOut();
+          return $('#tweet-box').focus();
+        }
       });
-      return setTimeout(function() {
-        $('#social-save-status').text("Saved").delay(500).fadeOut();
-        return $('#tweet-box').focus();
-      }, 1000);
+    },
+    setStatusMessage: function(data) {
+      if (data.set_to_publish) {
+        return $('#social-save-status').text("Social posts set to publish at " + (new Date(data.publish_at)));
+      } else {
+        return $('#social-save-status').text("Social posts in draft");
+      }
     }
   };
 
   view = {
-    addFields: function() {
+    addFields: function(callback) {
       console.log('add fields now');
-      $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-4 medium-push-8\">\n  <div class=\"selector-container right\"> \n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 40px; font-size: 14px;\"></div>\n    <button id=\"social-save\" class=\"button tiny primary submit flex-item\" tabindex=\"8\">Save Social</button>\n  </div>\n</div>\n");
+      $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n    <button id=\"social-draft\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Save Social Draft</button>\n    <button id=\"social-save\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Schedule to publish</button>\n  </div>\n</div>\n");
       $('#tweet-box').on('keyup', (function(_this) {
         return function() {
           return _this.setCharCount();
         };
       })(this));
       $('#social-save').on('click', function() {
-        return Socializer.saveSocial();
+        return Socializer.saveSocial({
+          set_to_publish: true
+        });
       });
-      return setTimeout((function(_this) {
+      $('#social-draft').on('click', function() {
+        return Socializer.saveSocial({
+          set_to_publish: false
+        });
+      });
+      setTimeout((function(_this) {
         return function() {
           return _this.setCharCount();
         };
       })(this), 500);
+      return callback();
     },
     setCharCount: function() {
       return $('.tweet-char-counter').text(Socializer.countdown());

@@ -26,10 +26,22 @@ Socializer =
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          view.addFields()
+          view.addFields =>
+            @fetchSocial(@getPostId())
         # else
         #   view.removeFields()
     , 500
+
+  fetchSocial: (postId) ->
+    $.ajax
+      method: "GET"
+      url: "http://localhost:3000/stories/#{postId}.json"
+      success: (data) =>
+        $('#tweet-box').val(data.tweet)
+        $('#facebook-box').val(data.fb_post)
+        @setStatusMessage(data)
+      error: ->
+      complete: ->
 
   editorVisible: ->
     $('div.editor:visible').length != 0
@@ -88,19 +100,32 @@ Socializer =
     domain: @getDomain()
     kinja_id: @getPostId()
 
-  saveSocial: ->
+  saveSocial: (opts) ->
     $('#social-save-status').show().text("Saving...")
+    params = @getData()
+    params.set_to_publish = opts.set_to_publish
     $.ajax
       url: "http://localhost:3000/stories"
       method: "POST"
-      data: @getData()
-    setTimeout ->
-      $('#social-save-status').text("Saved").delay(500).fadeOut()
-      $('#tweet-box').focus()
-    , 1000
+      data: params
+      success: (data) =>
+        # $('#social-save-status').text("Saved")
+        $('#tweet-box').focus()
+        # setTimeout =>
+        @setStatusMessage(data)
+        # , 500
+      error: ->
+        $('#social-save-status').text("Something went wrong").delay(500).fadeOut()
+        $('#tweet-box').focus()
+
+  setStatusMessage: (data) ->
+    if data.set_to_publish
+      $('#social-save-status').text "Social posts set to publish at #{new Date(data.publish_at)}"
+    else
+      $('#social-save-status').text "Social posts in draft"
 
 view =
-  addFields: ->
+  addFields: (callback) ->
     console.log 'add fields now'
     $('div.row.editor-actions').after(
       """
@@ -126,10 +151,11 @@ view =
           </div>
         </div>
 
-        <div style="margin-top: 10px;" class="columns small-12 medium-4 medium-push-8">
-          <div class="selector-container right"> 
-            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 40px; font-size: 14px;"></div>
-            <button id="social-save" class="button tiny primary submit flex-item" tabindex="8">Save Social</button>
+        <div style="margin-top: 10px;" class="columns small-12 medium-12>
+          <div class="selector-container right">
+            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
+            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save Social Draft</button>
+            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Schedule to publish</button>
           </div>
         </div>
 
@@ -138,10 +164,13 @@ view =
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
     $('#social-save').on 'click', ->
-      Socializer.saveSocial()
+      Socializer.saveSocial(set_to_publish: true)
+    $('#social-draft').on 'click', ->
+      Socializer.saveSocial(set_to_publish: false)
     setTimeout =>
       @setCharCount()
     , 500
+    callback()
 
   setCharCount: ->
     $('.tweet-char-counter').text Socializer.countdown()

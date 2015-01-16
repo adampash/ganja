@@ -1,5 +1,5 @@
 view =
-  addFields: ->
+  addFields: (callback) ->
     console.log 'add fields now'
     $('div.row.editor-actions').after(
       """
@@ -25,10 +25,11 @@ view =
           </div>
         </div>
 
-        <div style="margin-top: 10px;" class="columns small-12 medium-4 medium-push-8">
-          <div class="selector-container right"> 
-            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 40px; font-size: 14px;"></div>
-            <button id="social-save" class="button tiny primary submit flex-item" tabindex="8">Save Social</button>
+        <div style="margin-top: 10px;" class="columns small-12 medium-12>
+          <div class="selector-container right">
+            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
+            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save Social Draft</button>
+            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Schedule to publish</button>
           </div>
         </div>
 
@@ -37,10 +38,13 @@ view =
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
     $('#social-save').on 'click', ->
-      Socializer.saveSocial()
+      Socializer.saveSocial(set_to_publish: true)
+    $('#social-draft').on 'click', ->
+      Socializer.saveSocial(set_to_publish: false)
     setTimeout =>
       @setCharCount()
     , 500
+    callback()
 
   setCharCount: ->
     $('.tweet-char-counter').text Socializer.countdown()
