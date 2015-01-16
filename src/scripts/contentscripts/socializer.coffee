@@ -43,13 +43,36 @@ Socializer =
   getURL: ->
     window.location.href.replace(/\/preview\//, '/').split('?')[0]
 
+  getAuthors: ->
+    @kinja.postMeta.authors
+
   getPublishTime: ->
-    @kinja.postMeta.post.publishTimeMillis
+    new Date(@kinja.postMeta.post.publishTimeMillis)
+
+  getDomain: ->
+    @getURL().match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i)[1]
+
+  getPostId: ->
+    @kinja.postMeta.postId
 
   verifyTimeSync: ->
 
+  getData: ->
+    tweet: $('#tweet-box').val()
+    author: @getAuthors()
+    fb_post: $('#facebook-box').val()
+    publish_at: @getPublishTime()
+    url: @getURL()
+    title: $('.editable-headline').first().text()
+    domain: @getDomain()
+    kinja_id: @getPostId()
+
   saveSocial: ->
     $('#social-save-status').show().text("Saving...")
+    $.ajax
+      url: "http://localhost:3000/stories"
+      method: "POST"
+      data: @getData()
     setTimeout ->
       $('#social-save-status').text("Saved").delay(500).fadeOut()
       $('#tweet-box').focus()

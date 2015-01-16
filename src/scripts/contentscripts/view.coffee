@@ -20,7 +20,7 @@ view =
               <i class="icon icon-facebook icon-prepend" style="font-size: 25px; margin-top: 12px;" ></i>
             </div>
             <div class="columns medium-11 small-11">
-              <textarea class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
+              <textarea id="facebook-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
             </div>
           </div>
         </div>

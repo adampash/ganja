@@ -64,13 +64,36 @@ Socializer =
   getURL: ->
     window.location.href.replace(/\/preview\//, '/').split('?')[0]
 
+  getAuthors: ->
+    @kinja.postMeta.authors
+
   getPublishTime: ->
-    @kinja.postMeta.post.publishTimeMillis
+    new Date(@kinja.postMeta.post.publishTimeMillis)
+
+  getDomain: ->
+    @getURL().match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i)[1]
+
+  getPostId: ->
+    @kinja.postMeta.postId
 
   verifyTimeSync: ->
 
+  getData: ->
+    tweet: $('#tweet-box').val()
+    author: @getAuthors()
+    fb_post: $('#facebook-box').val()
+    publish_at: @getPublishTime()
+    url: @getURL()
+    title: $('.editable-headline').first().text()
+    domain: @getDomain()
+    kinja_id: @getPostId()
+
   saveSocial: ->
     $('#social-save-status').show().text("Saving...")
+    $.ajax
+      url: "http://localhost:3000/stories"
+      method: "POST"
+      data: @getData()
     setTimeout ->
       $('#social-save-status').text("Saved").delay(500).fadeOut()
       $('#tweet-box').focus()
@@ -98,7 +121,7 @@ view =
               <i class="icon icon-facebook icon-prepend" style="font-size: 25px; margin-top: 12px;" ></i>
             </div>
             <div class="columns medium-11 small-11">
-              <textarea class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
+              <textarea id="facebook-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
             </div>
           </div>
         </div>
