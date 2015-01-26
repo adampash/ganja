@@ -1,4 +1,30 @@
 view =
+  root: 'http://localhost:3000'
+
+  loginPrompt: (callback) ->
+    $('div.row.editor-actions').after(
+      """
+        <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+          <div class="columns medium-12 small-12">
+            <h4>In order to edit Twitter/Facebook posts, you need to log into the tool with your Gawker email</h4>
+            <button id="socializer-login" class="button tiny secondary flex-item" tabindex="8">Login now</button>
+          </div>
+        </div>
+
+      """
+    )
+    $('#socializer-login').on 'click', =>
+      child = window.open "#{@root}/signin"
+
+      checkChild = ->
+        if (!child.location? or child.closed)
+          console.log 'signin window closed'
+          clearInterval(timer)
+          $('.socializer-login-prompt').remove()
+          callback()
+
+      timer = setInterval(checkChild, 500)
+
   addFields: (callback) ->
     console.log 'add fields now'
     $('div.row.editor-actions').after(

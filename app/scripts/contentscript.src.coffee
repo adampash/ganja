@@ -20,22 +20,37 @@ helper =
     ret
 
 Socializer =
+  root: 'http://localhost:3000'
   init: (@kinja) ->
     @editing = false
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          view.addFields =>
-            @fetchSocial(@getPostId())
+          @checkLogin (logged_in) =>
+            if logged_in
+              view.addFields =>
+                @fetchSocial(@getPostId())
+            else
+              view.loginPrompt =>
+                @init(@kinja)
         # else
         #   view.removeFields()
     , 500
 
+  checkLogin: (callback) ->
+    $.ajax
+      method: "GET"
+      url: "#{@root}/login_check"
+      success: (data) =>
+        callback data.logged_in
+      error: ->
+      complete: ->
+
   fetchSocial: (postId) ->
     $.ajax
       method: "GET"
-      url: "http://localhost:3000/stories/#{postId}.json"
+      url: "#{@root}/stories/#{postId}.json"
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
@@ -125,6 +140,32 @@ Socializer =
       $('#social-save-status').text "Social posts in draft"
 
 view =
+  root: 'http://localhost:3000'
+
+  loginPrompt: (callback) ->
+    $('div.row.editor-actions').after(
+      """
+        <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+          <div class="columns medium-12 small-12">
+            <h4>In order to edit Twitter/Facebook posts, you need to log into the tool with your Gawker email</h4>
+            <button id="socializer-login" class="button tiny secondary flex-item" tabindex="8">Login now</button>
+          </div>
+        </div>
+
+      """
+    )
+    $('#socializer-login').on 'click', =>
+      child = window.open "#{@root}/signin"
+
+      checkChild = ->
+        if (!child.location? or child.closed)
+          console.log 'signin window closed'
+          clearInterval(timer)
+          $('.socializer-login-prompt').remove()
+          callback()
+
+      timer = setInterval(checkChild, 500)
+
   addFields: (callback) ->
     console.log 'add fields now'
     $('div.row.editor-actions').after(

@@ -1,20 +1,35 @@
 Socializer =
+  root: 'http://localhost:3000'
   init: (@kinja) ->
     @editing = false
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          view.addFields =>
-            @fetchSocial(@getPostId())
+          @checkLogin (logged_in) =>
+            if logged_in
+              view.addFields =>
+                @fetchSocial(@getPostId())
+            else
+              view.loginPrompt =>
+                @init(@kinja)
         # else
         #   view.removeFields()
     , 500
 
+  checkLogin: (callback) ->
+    $.ajax
+      method: "GET"
+      url: "#{@root}/login_check"
+      success: (data) =>
+        callback data.logged_in
+      error: ->
+      complete: ->
+
   fetchSocial: (postId) ->
     $.ajax
       method: "GET"
-      url: "http://localhost:3000/stories/#{postId}.json"
+      url: "#{@root}/stories/#{postId}.json"
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)

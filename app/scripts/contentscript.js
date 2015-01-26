@@ -25,6 +25,7 @@
   };
 
   Socializer = {
+    root: 'http://localhost:3000',
     init: function(kinja) {
       this.kinja = kinja;
       this.editing = false;
@@ -33,18 +34,39 @@
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
-              return view.addFields(function() {
-                return _this.fetchSocial(_this.getPostId());
+              return _this.checkLogin(function(logged_in) {
+                if (logged_in) {
+                  return view.addFields(function() {
+                    return _this.fetchSocial(_this.getPostId());
+                  });
+                } else {
+                  return view.loginPrompt(function() {
+                    return _this.init(_this.kinja);
+                  });
+                }
               });
             }
           }
         };
       })(this), 500);
     },
+    checkLogin: function(callback) {
+      return $.ajax({
+        method: "GET",
+        url: "" + this.root + "/login_check",
+        success: (function(_this) {
+          return function(data) {
+            return callback(data.logged_in);
+          };
+        })(this),
+        error: function() {},
+        complete: function() {}
+      });
+    },
     fetchSocial: function(postId) {
       return $.ajax({
         method: "GET",
-        url: "http://localhost:3000/stories/" + postId + ".json",
+        url: "" + this.root + "/stories/" + postId + ".json",
         success: (function(_this) {
           return function(data) {
             $('#tweet-box').val(data.tweet);
@@ -150,6 +172,25 @@
   };
 
   view = {
+    root: 'http://localhost:3000',
+    loginPrompt: function(callback) {
+      $('div.row.editor-actions').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to edit Twitter/Facebook posts, you need to log into the tool with your Gawker email</h4>\n    <button id=\"socializer-login\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Login now</button>\n  </div>\n</div>\n");
+      return $('#socializer-login').on('click', (function(_this) {
+        return function() {
+          var checkChild, child, timer;
+          child = window.open("" + _this.root + "/signin");
+          checkChild = function() {
+            if ((child.location == null) || child.closed) {
+              console.log('signin window closed');
+              clearInterval(timer);
+              $('.socializer-login-prompt').remove();
+              return callback();
+            }
+          };
+          return timer = setInterval(checkChild, 500);
+        };
+      })(this));
+    },
     addFields: function(callback) {
       console.log('add fields now');
       $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n    <button id=\"social-draft\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Save Social Draft</button>\n    <button id=\"social-save\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Schedule to publish</button>\n  </div>\n</div>\n");
