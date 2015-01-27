@@ -12,9 +12,9 @@ Socializer =
               view.addFields =>
                 @fetchSocial(@getPostId())
               # @addEvents()
-              # $('.save.submit').on 'click', ->
-              #   console.log 'save draft'
-              #   return false
+              $('.save.submit').on 'click', ->
+                console.log 'save draft'
+                return false
             else
               view.loginPrompt =>
                 @init(@kinja)
@@ -38,7 +38,7 @@ Socializer =
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
-        @setStatusMessage(data)
+        # @setStatusMessage(data)
       error: ->
       complete: ->
 
@@ -111,7 +111,7 @@ Socializer =
         # $('#social-save-status').text("Saved")
         $('#tweet-box').focus()
         # setTimeout =>
-        @setStatusMessage(data)
+        # @setStatusMessage(data)
         # , 500
       error: ->
         $('#social-save-status').text("Something went wrong").delay(500).fadeOut()

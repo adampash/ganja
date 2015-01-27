@@ -33,9 +33,9 @@ Socializer =
               view.addFields =>
                 @fetchSocial(@getPostId())
               # @addEvents()
-              # $('.save.submit').on 'click', ->
-              #   console.log 'save draft'
-              #   return false
+              $('.save.submit').on 'click', ->
+                console.log 'save draft'
+                return false
             else
               view.loginPrompt =>
                 @init(@kinja)
@@ -59,7 +59,7 @@ Socializer =
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
-        @setStatusMessage(data)
+        # @setStatusMessage(data)
       error: ->
       complete: ->
 
@@ -132,7 +132,7 @@ Socializer =
         # $('#social-save-status').text("Saved")
         $('#tweet-box').focus()
         # setTimeout =>
-        @setStatusMessage(data)
+        # @setStatusMessage(data)
         # , 500
       error: ->
         $('#social-save-status').text("Something went wrong").delay(500).fadeOut()
@@ -160,7 +160,8 @@ view =
   root: 'http://localhost:3000'
 
   loginPrompt: (callback) ->
-    $('div.row.editor-actions').after(
+    # $('div.row.editor-actions').after(
+    $('div.editor-taglist-wrapper').after(
       """
         <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
           <div class="columns medium-12 small-12">
@@ -185,40 +186,47 @@ view =
 
   addFields: (callback) ->
     console.log 'add fields now'
-    $('div.row.editor-actions').after(
+    iconStyle = 'style="margin: .5rem 0; opacity: 0.5;"'
+    textareaStyle = 'class="js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"'
+    # $('div.row.editor-actions').after(
+    $('div.editor-taglist-wrapper').after(
       """
-        <div class="row" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
-          <div class="columns medium-12 small-12">
-            <div class="columns small-1 medium-1">
-              <i class="icon icon-twitter icon-prepend" style="font-size: 25px; margin-top: 12px;" ></i>
-            </div>
-            <div class="columns medium-11 small-11">
-              <textarea id="tweet-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="6"></textarea>
-              <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
-            </div>
+        <div class="row collapse social_row" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+          <div class="column">
+            <span class="js_tag tag">
+              <i class="icon icon-twitter" #{iconStyle}></i>
+              <div class="js_taglist taglist">
+                <span class="js_taglist-tags taglist-tags mbn no-shadow"></span>
+                <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="6"></textarea>
+                <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
+              </div>
+            </span>
           </div>
         </div>
-        <div class="row" style="border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
-          <div class="columns medium-12 small-12">
-            <div class="columns small-1 medium-1">
-              <i class="icon icon-facebook icon-prepend" style="font-size: 25px; margin-top: 12px;" ></i>
-            </div>
-            <div class="columns medium-11 small-11">
-              <textarea id="facebook-box" class="inline no-shadow" style="color: #000; border: none;" type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
-            </div>
+
+
+        <div class="row collapse social_row" style="border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+          <div class="column">
+            <span class="js_tag tag">
+              <i class="icon icon-facebook" #{iconStyle}></i>
+              <div class="js_taglist taglist">
+                <textarea id="facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
+              </div>
+            </span>
           </div>
         </div>
+
 
         <div style="margin-top: 10px;" class="columns small-12 medium-12>
           <div class="selector-container right">
             <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
-            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save draft</button>
-            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Ready to publish</button>
           </div>
         </div>
 
       """
     )
+    $('.social_row').on 'click', (el) ->
+      $(el.currentTarget).find('textarea').focus()
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
     $('#social-save').on 'click', ->

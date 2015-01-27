@@ -36,8 +36,12 @@
             if (_this.editing) {
               return _this.checkLogin(function(logged_in) {
                 if (logged_in) {
-                  return view.addFields(function() {
+                  view.addFields(function() {
                     return _this.fetchSocial(_this.getPostId());
+                  });
+                  return $('.save.submit').on('click', function() {
+                    console.log('save draft');
+                    return false;
                   });
                 } else {
                   return view.loginPrompt(function() {
@@ -70,8 +74,7 @@
         success: (function(_this) {
           return function(data) {
             $('#tweet-box').val(data.tweet);
-            $('#facebook-box').val(data.fb_post);
-            return _this.setStatusMessage(data);
+            return $('#facebook-box').val(data.fb_post);
           };
         })(this),
         error: function() {},
@@ -152,8 +155,7 @@
         data: params,
         success: (function(_this) {
           return function(data) {
-            $('#tweet-box').focus();
-            return _this.setStatusMessage(data);
+            return $('#tweet-box').focus();
           };
         })(this),
         error: function() {
@@ -188,7 +190,7 @@
   view = {
     root: 'http://localhost:3000',
     loginPrompt: function(callback) {
-      $('div.row.editor-actions').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to draft Twitter/Facebook posts, log into Gawker Socializer with your Gawker email</h4>\n    <button id=\"socializer-login\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Login now</button>\n  </div>\n</div>\n");
+      $('div.editor-taglist-wrapper').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to draft Twitter/Facebook posts, log into Gawker Socializer with your Gawker email</h4>\n    <button id=\"socializer-login\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Login now</button>\n  </div>\n</div>\n");
       return $('#socializer-login').on('click', (function(_this) {
         return function() {
           var checkChild, child, timer;
@@ -206,8 +208,14 @@
       })(this));
     },
     addFields: function(callback) {
+      var iconStyle, textareaStyle;
       console.log('add fields now');
-      $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n    <button id=\"social-draft\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Save draft</button>\n    <button id=\"social-save\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Ready to publish</button>\n  </div>\n</div>\n");
+      iconStyle = 'style="margin: .5rem 0; opacity: 0.5;"';
+      textareaStyle = 'class="js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"';
+      $('div.editor-taglist-wrapper').after("<div class=\"row collapse social_row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"column\">\n    <span class=\"js_tag tag\">\n      <i class=\"icon icon-twitter\" " + iconStyle + "></i>\n      <div class=\"js_taglist taglist\">\n        <span class=\"js_taglist-tags taglist-tags mbn no-shadow\"></span>\n        <textarea id=\"tweet-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n        <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n      </div>\n    </span>\n  </div>\n</div>\n\n\n<div class=\"row collapse social_row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"column\">\n    <span class=\"js_tag tag\">\n      <i class=\"icon icon-facebook\" " + iconStyle + "></i>\n      <div class=\"js_taglist taglist\">\n        <textarea id=\"facebook-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n      </div>\n    </span>\n  </div>\n</div>\n\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n  </div>\n</div>\n");
+      $('.social_row').on('click', function(el) {
+        return $(el.currentTarget).find('textarea').focus();
+      });
       $('#tweet-box').on('keyup', (function(_this) {
         return function() {
           return _this.setCharCount();
