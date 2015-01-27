@@ -42,7 +42,7 @@
     params.publish_at = new Date(params.publish_at);
     console.log(params);
     return $.ajax({
-      url: "http://localhost:3000/stories",
+      url: "http://localhost:3000/stories/update_pub",
       method: "POST",
       data: params,
       success: (function(_this) {

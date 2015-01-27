@@ -42,10 +42,10 @@ Socializer =
       method: "GET"
       url: "#{@root}/stories/#{postId}.json"
       success: (data) =>
+        @latestSocial = data
+        return unless data?
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
-        @latestSocial = data
-        # @setStatusMessage(data)
       error: ->
       complete: ->
 

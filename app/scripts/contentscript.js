@@ -94,9 +94,12 @@
         url: "" + this.root + "/stories/" + postId + ".json",
         success: (function(_this) {
           return function(data) {
+            _this.latestSocial = data;
+            if (data == null) {
+              return;
+            }
             $('#tweet-box').val(data.tweet);
-            $('#facebook-box').val(data.fb_post);
-            return _this.latestSocial = data;
+            return $('#facebook-box').val(data.fb_post);
           };
         })(this),
         error: function() {},
