@@ -115,6 +115,11 @@ Socializer =
   setStatusMessage: (data) ->
     pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a')
     if data.set_to_publish
-      $('#social-save-status').html("<i class=\"icon icon-checkmark icon-prepend\" style=\"color: green;\"></i>Social posts set to go live at #{pub_time}").css('color', 'green')
+      color = 'green'
+      msg = "Social posts set to go live at #{pub_time}"
+      icon = "checkmark"
     else
-      $('#social-save-status').text("Social posts in draft for #{pub_time}").css('color', 'burlywood')
+      color = 'burlywood'
+      msg = "Social posts in draft for #{pub_time}"
+      icon = "pencil-alt "
+    $('#social-save-status').html("<i class=\"icon icon-#{icon} icon-prepend\" style=\"color: #{color};\"></i>#{msg}").css('color', color)

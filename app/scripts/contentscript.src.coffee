@@ -136,9 +136,14 @@ Socializer =
   setStatusMessage: (data) ->
     pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a')
     if data.set_to_publish
-      $('#social-save-status').html("<i class=\"icon icon-checkmark icon-prepend\" style=\"color: green;\"></i>Social posts set to go live at #{pub_time}").css('color', 'green')
+      color = 'green'
+      msg = "Social posts set to go live at #{pub_time}"
+      icon = "checkmark"
     else
-      $('#social-save-status').text("Social posts in draft for #{pub_time}").css('color', 'burlywood')
+      color = 'burlywood'
+      msg = "Social posts in draft for #{pub_time}"
+      icon = "pencil-alt "
+    $('#social-save-status').html("<i class=\"icon icon-#{icon} icon-prepend\" style=\"color: #{color};\"></i>#{msg}").css('color', color)
 
 view =
   root: 'http://localhost:3000'
@@ -148,7 +153,7 @@ view =
       """
         <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
           <div class="columns medium-12 small-12">
-            <h4>In order to edit Twitter/Facebook posts, you need to log into the tool with your Gawker email</h4>
+            <h4>In order to draft Twitter/Facebook posts, log into Gawker Socializer with your Gawker email</h4>
             <button id="socializer-login" class="button tiny secondary flex-item" tabindex="8">Login now</button>
           </div>
         </div>
@@ -215,7 +220,10 @@ view =
     callback()
 
   setCharCount: ->
-    $('.tweet-char-counter').text Socializer.countdown()
+    charCount = Socializer.countdown()
+    if charCount < 0 then cssTweak = color: 'red' else cssTweak = {color: '#999'}
+    # debugger
+    $('.tweet-char-counter').text(charCount).css(cssTweak)
 
   removeFields: ->
     console.log 'remove fields now'

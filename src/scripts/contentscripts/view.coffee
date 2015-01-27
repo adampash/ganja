@@ -6,7 +6,7 @@ view =
       """
         <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
           <div class="columns medium-12 small-12">
-            <h4>In order to edit Twitter/Facebook posts, you need to log into the tool with your Gawker email</h4>
+            <h4>In order to draft Twitter/Facebook posts, log into Gawker Socializer with your Gawker email</h4>
             <button id="socializer-login" class="button tiny secondary flex-item" tabindex="8">Login now</button>
           </div>
         </div>
@@ -73,7 +73,10 @@ view =
     callback()
 
   setCharCount: ->
-    $('.tweet-char-counter').text Socializer.countdown()
+    charCount = Socializer.countdown()
+    if charCount < 0 then cssTweak = color: 'red' else cssTweak = {color: '#999'}
+    # debugger
+    $('.tweet-char-counter').text(charCount).css(cssTweak)
 
   removeFields: ->
     console.log 'remove fields now'
