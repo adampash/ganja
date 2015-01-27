@@ -39,9 +39,15 @@
                   view.addFields(function() {
                     return _this.fetchSocial(_this.getPostId());
                   });
-                  return $('.save.submit').on('click', function() {
-                    console.log('save draft');
-                    return false;
+                  $('.save.submit').on('click', function() {
+                    return _this.saveSocial({
+                      set_to_publish: false
+                    });
+                  });
+                  return $('.publish.submit').on('click', function() {
+                    return _this.saveSocial({
+                      set_to_publish: true
+                    });
                   });
                 } else {
                   return view.loginPrompt(function() {
@@ -104,7 +110,7 @@
       yourBlogs.each(function(index) {
         var $el;
         $el = $(this);
-        urls.push($el.attr('href'));
+        urls.push($el.attr('href').replace('//', ''));
         return sites.push($el.text());
       });
       urls = _.uniq(urls);
@@ -126,7 +132,9 @@
       return new Date(this.kinja.postMeta.post.publishTimeMillis);
     },
     getDomain: function() {
-      return this.getURL().match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i)[1];
+      return this.getBlogs(function(blogs) {
+        return blogs[$('button.group-blog-container span').not('.hide').text()];
+      });
     },
     getPostId: function() {
       return this.kinja.postMeta.postId;
@@ -146,22 +154,11 @@
     },
     saveSocial: function(opts) {
       var params;
-      $('#social-save-status').show().text("Saving...");
       params = this.getData();
       params.set_to_publish = opts.set_to_publish;
-      return $.ajax({
-        url: "http://localhost:3000/stories",
-        method: "POST",
-        data: params,
-        success: (function(_this) {
-          return function(data) {
-            return $('#tweet-box').focus();
-          };
-        })(this),
-        error: function() {
-          $('#social-save-status').text("Something went wrong").delay(500).fadeOut();
-          return $('#tweet-box').focus();
-        }
+      params.method = 'saveSocial';
+      return chrome.runtime.sendMessage(params, function(response) {
+        return console.log(response);
       });
     },
     hasSocialPosts: function(data) {
@@ -258,16 +255,10 @@
   };
 
   init = function() {
-    var blogs, pageWin;
+    var pageWin;
     pageWin = helper.retrieveWindowVariables(['kinja']);
     if ((pageWin.kinja != null) && (pageWin.kinja.postMeta != null)) {
-      Socializer.init(pageWin.kinja);
-      blogs = {};
-      Socializer.getBlogs(function(_blogs) {
-        blogs = _blogs;
-        return console.log(blogs);
-      });
-      return console.log(Socializer.getPublishTime(pageWin.kinja));
+      return Socializer.init(pageWin.kinja);
     } else {
       return setTimeout(function() {
         return init();

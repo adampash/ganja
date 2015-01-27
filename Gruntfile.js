@@ -146,7 +146,8 @@ module.exports = function (grunt) {
           sourceMap: true
         },
         files: {
-          'app/scripts/contentscript.js': ['src/scripts/contentscripts/*.coffee']
+          'app/scripts/contentscript.js': ['src/scripts/contentscripts/*.coffee'],
+          'app/scripts/background.js': ['src/scripts/background.coffee']
         }
       }
     },

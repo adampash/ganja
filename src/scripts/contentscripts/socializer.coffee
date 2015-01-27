@@ -12,9 +12,10 @@ Socializer =
               view.addFields =>
                 @fetchSocial(@getPostId())
               # @addEvents()
-              $('.save.submit').on 'click', ->
-                console.log 'save draft'
-                return false
+              $('.save.submit').on 'click', =>
+                @saveSocial(set_to_publish: false)
+              $('.publish.submit').on 'click', =>
+                @saveSocial(set_to_publish: true)
             else
               view.loginPrompt =>
                 @init(@kinja)
@@ -60,7 +61,7 @@ Socializer =
       , 1000
     yourBlogs.each (index) ->
       $el = $(@)
-      urls.push $el.attr('href')
+      urls.push $el.attr('href').replace('//', '')
       sites.push $el.text()
 
     urls = _.uniq urls
@@ -82,7 +83,8 @@ Socializer =
     new Date(@kinja.postMeta.post.publishTimeMillis)
 
   getDomain: ->
-    @getURL().match(/^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i)[1]
+    @getBlogs (blogs) ->
+      blogs[$('button.group-blog-container span').not('.hide').text()]
 
   getPostId: ->
     @kinja.postMeta.postId
@@ -100,22 +102,12 @@ Socializer =
     kinja_id: @getPostId()
 
   saveSocial: (opts) ->
-    $('#social-save-status').show().text("Saving...")
+    # $('#social-save-status').show().text("Saving...")
     params = @getData()
     params.set_to_publish = opts.set_to_publish
-    $.ajax
-      url: "http://localhost:3000/stories"
-      method: "POST"
-      data: params
-      success: (data) =>
-        # $('#social-save-status').text("Saved")
-        $('#tweet-box').focus()
-        # setTimeout =>
-        # @setStatusMessage(data)
-        # , 500
-      error: ->
-        $('#social-save-status').text("Something went wrong").delay(500).fadeOut()
-        $('#tweet-box').focus()
+    params.method = 'saveSocial'
+    chrome.runtime.sendMessage params, (response) ->
+      console.log(response)
 
   hasSocialPosts: (data) ->
     data.tweet != "" or data.fb_post != ""
