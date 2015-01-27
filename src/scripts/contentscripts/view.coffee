@@ -54,8 +54,8 @@ view =
         <div style="margin-top: 10px;" class="columns small-12 medium-12>
           <div class="selector-container right">
             <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
-            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save Social Draft</button>
-            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Schedule to publish</button>
+            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save draft</button>
+            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Ready to publish</button>
           </div>
         </div>
 

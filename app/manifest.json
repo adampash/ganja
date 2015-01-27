@@ -28,6 +28,7 @@
       ],
       "js": [
         "scripts/jquery.js",
+        "scripts/moment.js",
         "scripts/underscore.js",
         "scripts/contentscript.js"
       ],

@@ -163,10 +163,12 @@
       });
     },
     setStatusMessage: function(data) {
+      var pub_time;
+      pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a');
       if (data.set_to_publish) {
-        return $('#social-save-status').text("Social posts set to publish at " + (new Date(data.publish_at)));
+        return $('#social-save-status').html("<i class=\"icon icon-checkmark icon-prepend\" style=\"color: green;\"></i>Social posts set to go live at " + pub_time).css('color', 'green');
       } else {
-        return $('#social-save-status').text("Social posts in draft");
+        return $('#social-save-status').text("Social posts in draft for " + pub_time).css('color', 'burlywood');
       }
     }
   };
@@ -193,7 +195,7 @@
     },
     addFields: function(callback) {
       console.log('add fields now');
-      $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n    <button id=\"social-draft\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Save Social Draft</button>\n    <button id=\"social-save\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Schedule to publish</button>\n  </div>\n</div>\n");
+      $('div.row.editor-actions').after("<div class=\"row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-twitter icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"tweet-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"6\"></textarea>\n      <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n    </div>\n  </div>\n</div>\n<div class=\"row\" style=\"border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <div class=\"columns small-1 medium-1\">\n      <i class=\"icon icon-facebook icon-prepend\" style=\"font-size: 25px; margin-top: 12px;\" ></i>\n    </div>\n    <div class=\"columns medium-11 small-11\">\n      <textarea id=\"facebook-box\" class=\"inline no-shadow\" style=\"color: #000; border: none;\" type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"7\"></textarea>\n    </div>\n  </div>\n</div>\n\n<div style=\"margin-top: 10px;\" class=\"columns small-12 medium-12>\n  <div class=\"selector-container right\">\n    <div id=\"social-save-status\" style=\"margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;\"></div>\n    <button id=\"social-draft\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Save draft</button>\n    <button id=\"social-save\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Ready to publish</button>\n  </div>\n</div>\n");
       $('#tweet-box').on('keyup', (function(_this) {
         return function() {
           return _this.setCharCount();

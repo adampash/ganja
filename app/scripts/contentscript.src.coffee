@@ -134,10 +134,11 @@ Socializer =
         $('#tweet-box').focus()
 
   setStatusMessage: (data) ->
+    pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a')
     if data.set_to_publish
-      $('#social-save-status').text "Social posts set to publish at #{new Date(data.publish_at)}"
+      $('#social-save-status').html("<i class=\"icon icon-checkmark icon-prepend\" style=\"color: green;\"></i>Social posts set to go live at #{pub_time}").css('color', 'green')
     else
-      $('#social-save-status').text "Social posts in draft"
+      $('#social-save-status').text("Social posts in draft for #{pub_time}").css('color', 'burlywood')
 
 view =
   root: 'http://localhost:3000'
@@ -195,8 +196,8 @@ view =
         <div style="margin-top: 10px;" class="columns small-12 medium-12>
           <div class="selector-container right">
             <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
-            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save Social Draft</button>
-            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Schedule to publish</button>
+            <button id="social-draft" class="button tiny secondary flex-item" tabindex="8">Save draft</button>
+            <button id="social-save" class="button tiny secondary flex-item" tabindex="8">Ready to publish</button>
           </div>
         </div>
 
