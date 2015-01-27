@@ -21,6 +21,7 @@ helper =
 
 Socializer =
   root: 'http://localhost:3000'
+
   init: (@kinja) ->
     @editing = false
     @interval = setInterval =>
@@ -31,6 +32,10 @@ Socializer =
             if logged_in
               view.addFields =>
                 @fetchSocial(@getPostId())
+              # @addEvents()
+              # $('.save.submit').on 'click', ->
+              #   console.log 'save draft'
+              #   return false
             else
               view.loginPrompt =>
                 @init(@kinja)
@@ -133,17 +138,23 @@ Socializer =
         $('#social-save-status').text("Something went wrong").delay(500).fadeOut()
         $('#tweet-box').focus()
 
+  hasSocialPosts: (data) ->
+    data.tweet != "" or data.fb_post != ""
+
   setStatusMessage: (data) ->
-    pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a')
-    if data.set_to_publish
-      color = 'green'
-      msg = "Social posts set to go live at #{pub_time}"
-      icon = "checkmark"
+    if @hasSocialPosts(data)
+      pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a')
+      if data.set_to_publish
+        color = 'green'
+        msg = "Social posts set to go live at #{pub_time}"
+        icon = "checkmark"
+      else
+        color = 'burlywood'
+        msg = "Social posts in draft for #{pub_time}"
+        icon = "pencil-alt "
+      $('#social-save-status').html("<i class=\"icon icon-#{icon} icon-prepend\" style=\"color: #{color};\"></i>#{msg}").css('color', color)
     else
-      color = 'burlywood'
-      msg = "Social posts in draft for #{pub_time}"
-      icon = "pencil-alt "
-    $('#social-save-status').html("<i class=\"icon icon-#{icon} icon-prepend\" style=\"color: #{color};\"></i>#{msg}").css('color', color)
+      $('#social-save-status').empty()
 
 view =
   root: 'http://localhost:3000'

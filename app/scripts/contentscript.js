@@ -162,19 +162,26 @@
         }
       });
     },
+    hasSocialPosts: function(data) {
+      return data.tweet !== "" || data.fb_post !== "";
+    },
     setStatusMessage: function(data) {
       var color, icon, msg, pub_time;
-      pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a');
-      if (data.set_to_publish) {
-        color = 'green';
-        msg = "Social posts set to go live at " + pub_time;
-        icon = "checkmark";
+      if (this.hasSocialPosts(data)) {
+        pub_time = moment(data.publish_at).format('MM/DD/YY, h:mm a');
+        if (data.set_to_publish) {
+          color = 'green';
+          msg = "Social posts set to go live at " + pub_time;
+          icon = "checkmark";
+        } else {
+          color = 'burlywood';
+          msg = "Social posts in draft for " + pub_time;
+          icon = "pencil-alt ";
+        }
+        return $('#social-save-status').html("<i class=\"icon icon-" + icon + " icon-prepend\" style=\"color: " + color + ";\"></i>" + msg).css('color', color);
       } else {
-        color = 'burlywood';
-        msg = "Social posts in draft for " + pub_time;
-        icon = "pencil-alt ";
+        return $('#social-save-status').empty();
       }
-      return $('#social-save-status').html("<i class=\"icon icon-" + icon + " icon-prepend\" style=\"color: " + color + ";\"></i>" + msg).css('color', color);
     }
   };
 
