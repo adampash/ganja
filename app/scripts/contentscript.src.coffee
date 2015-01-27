@@ -38,11 +38,7 @@ Socializer =
 
   init: (@kinja) ->
     @editing = false
-    params =
-      publish_at: @getPublishTime()
-      kinja_id: @getPostId()
-      method: 'updatePublishTime'
-    chrome.runtime.sendMessage params
+    @updatePublishTime() if window.location.search.match(/^\?rev=/)# if window.location.href.match(/\/preview\//)
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
@@ -72,6 +68,13 @@ Socializer =
       error: ->
       complete: ->
 
+  updatePublishTime: ->
+    params =
+      publish_at: @getPublishTime()
+      kinja_id: @getPostId()
+      method: 'updatePublishTime'
+    chrome.runtime.sendMessage params
+
   fetchSocial: (postId) ->
     $.ajax
       method: "GET"
@@ -85,7 +88,7 @@ Socializer =
       complete: ->
 
   editorVisible: ->
-    $('div.editor:visible').length != 0
+    $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
 
   countdown: ->
     140 - 24 - $('#tweet-box').val().length

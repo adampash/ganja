@@ -10,7 +10,6 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
       else if request.method is "updatePublishTime"
         delete request.method
         updatePublishTime(request)
-        # sendResponse({farewell: "goodbye"})
 
 saveSocial = (params) ->
   console.log 'saving social!'

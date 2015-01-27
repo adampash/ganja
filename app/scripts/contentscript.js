@@ -35,15 +35,11 @@
   Socializer = {
     root: 'http://localhost:3000',
     init: function(kinja) {
-      var params;
       this.kinja = kinja;
       this.editing = false;
-      params = {
-        publish_at: this.getPublishTime(),
-        kinja_id: this.getPostId(),
-        method: 'updatePublishTime'
-      };
-      chrome.runtime.sendMessage(params);
+      if (window.location.search.match(/^\?rev=/)) {
+        this.updatePublishTime();
+      }
       return this.interval = setInterval((function(_this) {
         return function() {
           if (_this.editorVisible() !== _this.editing) {
@@ -88,6 +84,15 @@
         complete: function() {}
       });
     },
+    updatePublishTime: function() {
+      var params;
+      params = {
+        publish_at: this.getPublishTime(),
+        kinja_id: this.getPostId(),
+        method: 'updatePublishTime'
+      };
+      return chrome.runtime.sendMessage(params);
+    },
     fetchSocial: function(postId) {
       return $.ajax({
         method: "GET",
@@ -107,7 +112,7 @@
       });
     },
     editorVisible: function() {
-      return $('div.editor:visible').length !== 0;
+      return $('div.editor:visible').length !== 0 && $('article.post.hentry:visible').length === 0;
     },
     countdown: function() {
       return 140 - 24 - $('#tweet-box').val().length;
