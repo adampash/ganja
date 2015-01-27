@@ -3,6 +3,11 @@ Socializer =
 
   init: (@kinja) ->
     @editing = false
+    params =
+      publish_at: @getPublishTime()
+      kinja_id: @getPostId()
+      method: 'updatePublishTime'
+    chrome.runtime.sendMessage params
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
@@ -39,6 +44,7 @@ Socializer =
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
+        @latestSocial = data
         # @setStatusMessage(data)
       error: ->
       complete: ->
@@ -80,7 +86,7 @@ Socializer =
     @kinja.postMeta.authors
 
   getPublishTime: ->
-    new Date(@kinja.postMeta.post.publishTimeMillis)
+    @kinja.postMeta.post.publishTimeMillis
 
   getDomain: ->
     @getBlogs (blogs) ->

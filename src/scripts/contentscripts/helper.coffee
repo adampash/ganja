@@ -18,3 +18,17 @@ helper =
     $("#tmpScript").remove()
 
     ret
+
+  watchAjax: (callback) ->
+    scriptContent = """
+      setTimeout(function() {
+      $(document).ajaxSuccess(function() {
+        debugger;
+        $( ".log" ).text( "Triggered ajaxSuccess handler." );
+      });
+      }, 1000);
+      """
+    script = document.createElement('script')
+    script.id = 'ajaxSuccess'
+    script.appendChild(document.createTextNode(scriptContent))
+    (document.body || document.head || document.documentElement).appendChild(script)

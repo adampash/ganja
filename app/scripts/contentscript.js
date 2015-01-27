@@ -21,14 +21,29 @@
       }
       $("#tmpScript").remove();
       return ret;
+    },
+    watchAjax: function(callback) {
+      var script, scriptContent;
+      scriptContent = "setTimeout(function() {\n$(document).ajaxSuccess(function() {\n  debugger;\n  $( \".log\" ).text( \"Triggered ajaxSuccess handler.\" );\n});\n}, 1000);";
+      script = document.createElement('script');
+      script.id = 'ajaxSuccess';
+      script.appendChild(document.createTextNode(scriptContent));
+      return (document.body || document.head || document.documentElement).appendChild(script);
     }
   };
 
   Socializer = {
     root: 'http://localhost:3000',
     init: function(kinja) {
+      var params;
       this.kinja = kinja;
       this.editing = false;
+      params = {
+        publish_at: this.getPublishTime(),
+        kinja_id: this.getPostId(),
+        method: 'updatePublishTime'
+      };
+      chrome.runtime.sendMessage(params);
       return this.interval = setInterval((function(_this) {
         return function() {
           if (_this.editorVisible() !== _this.editing) {
@@ -80,7 +95,8 @@
         success: (function(_this) {
           return function(data) {
             $('#tweet-box').val(data.tweet);
-            return $('#facebook-box').val(data.fb_post);
+            $('#facebook-box').val(data.fb_post);
+            return _this.latestSocial = data;
           };
         })(this),
         error: function() {},
@@ -129,7 +145,7 @@
       return this.kinja.postMeta.authors;
     },
     getPublishTime: function() {
-      return new Date(this.kinja.postMeta.post.publishTimeMillis);
+      return this.kinja.postMeta.post.publishTimeMillis;
     },
     getDomain: function() {
       return this.getBlogs(function(blogs) {

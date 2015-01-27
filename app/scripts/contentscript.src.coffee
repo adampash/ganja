@@ -19,11 +19,30 @@ helper =
 
     ret
 
+  watchAjax: (callback) ->
+    scriptContent = """
+      setTimeout(function() {
+      $(document).ajaxSuccess(function() {
+        debugger;
+        $( ".log" ).text( "Triggered ajaxSuccess handler." );
+      });
+      }, 1000);
+      """
+    script = document.createElement('script')
+    script.id = 'ajaxSuccess'
+    script.appendChild(document.createTextNode(scriptContent))
+    (document.body || document.head || document.documentElement).appendChild(script)
+
 Socializer =
   root: 'http://localhost:3000'
 
   init: (@kinja) ->
     @editing = false
+    params =
+      publish_at: @getPublishTime()
+      kinja_id: @getPostId()
+      method: 'updatePublishTime'
+    chrome.runtime.sendMessage params
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
@@ -60,6 +79,7 @@ Socializer =
       success: (data) =>
         $('#tweet-box').val(data.tweet)
         $('#facebook-box').val(data.fb_post)
+        @latestSocial = data
         # @setStatusMessage(data)
       error: ->
       complete: ->
@@ -101,7 +121,7 @@ Socializer =
     @kinja.postMeta.authors
 
   getPublishTime: ->
-    new Date(@kinja.postMeta.post.publishTimeMillis)
+    @kinja.postMeta.post.publishTimeMillis
 
   getDomain: ->
     @getBlogs (blogs) ->
