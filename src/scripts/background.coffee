@@ -1,3 +1,5 @@
+root = "http://localhost:3000"
+
 chrome.runtime.onInstalled.addListener (details) ->
   console.log('previousVersion', details.previousVersion)
 
@@ -10,6 +12,44 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
       else if request.method is "updatePublishTime"
         delete request.method
         updatePublishTime(request)
+      else if request.method is "login"
+        login(sender.tab)
+
+loginTab = {}
+senderTab = null
+loginCallback = null
+login = (_senderTab) ->
+  senderTab = _senderTab
+  chrome.tabs.create
+    windowId: null
+    url: "#{root}/signin"
+    index: senderTab.index + 1
+    , (_tab) ->
+      loginTab = _tab
+  chrome.tabs.onRemoved.addListener tabClosed
+  chrome.tabs.onUpdated.addListener tabUpdated
+
+tabUpdated = (tabId, changeInfo, tab) ->
+  if tabId is loginTab.id
+    closeTab(tab, tabId, senderTab)
+
+closeTab = (tab, tabId, senderTab) ->
+  if tab.url.match /^http:\/\/localhost:3000\//
+    console.log 'now close the tab and go back to editor'
+    chrome.tabs.remove(tabId)
+    chrome.tabs.update(senderTab.id, active: true)
+    chrome.tabs.onUpdated.removeListener tabUpdated
+
+tabClosed = (tabId, removeInfo) ->
+  console.log 'running tabClosed'
+  if tabId = loginTab.id
+    loginTab = {}
+    console.log 'it is the right tab'
+    chrome.tabs.sendMessage(senderTab.id, method: 'loginComplete')
+    removeListener()
+
+removeListener = ->
+  chrome.tabs.onRemoved.removeListener tabClosed
 
 saveSocial = (params) ->
   console.log 'saving social!'

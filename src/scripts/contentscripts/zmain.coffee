@@ -12,4 +12,8 @@ init = ->
       init()
     , 100
 
+chrome.runtime.onMessage.addListener (request, sender, callback) ->
+  if request.method is 'loginComplete'
+    Socializer.initEdit()
+
 init()

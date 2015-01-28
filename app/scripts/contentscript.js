@@ -45,31 +45,37 @@
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
-              return _this.checkLogin(function(logged_in) {
-                if (logged_in) {
-                  view.addFields(function() {
-                    return _this.fetchSocial(_this.getPostId());
-                  });
-                  $('.save.submit').on('click', function() {
-                    return _this.saveSocial({
-                      set_to_publish: false
-                    });
-                  });
-                  return $('.publish.submit').on('click', function() {
-                    return _this.saveSocial({
-                      set_to_publish: true
-                    });
-                  });
-                } else {
-                  return view.loginPrompt(function() {
-                    return _this.init(_this.kinja);
-                  });
-                }
-              });
+              return _this.initEdit();
             }
           }
         };
       })(this), 500);
+    },
+    initEdit: function() {
+      return this.checkLogin((function(_this) {
+        return function(logged_in) {
+          $('.socializer-login-prompt').remove();
+          if (logged_in) {
+            view.addFields(function() {
+              return _this.fetchSocial(_this.getPostId());
+            });
+            $('.save.submit').on('click', function() {
+              return _this.saveSocial({
+                set_to_publish: false
+              });
+            });
+            return $('.publish.submit').on('click', function() {
+              return _this.saveSocial({
+                set_to_publish: true
+              });
+            });
+          } else {
+            return view.loginPrompt(function() {
+              return _this.init(_this.kinja);
+            });
+          }
+        };
+      })(this));
     },
     checkLogin: function(callback) {
       return $.ajax({
@@ -211,20 +217,12 @@
   view = {
     root: 'http://localhost:3000',
     loginPrompt: function(callback) {
-      $('div.editor-taglist-wrapper').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to draft Twitter/Facebook posts, log into Gawker Socializer with your Gawker email</h4>\n    <button id=\"socializer-login\" class=\"button tiny secondary flex-item\" tabindex=\"8\">Login now</button>\n  </div>\n</div>\n");
+      $('div.editor-taglist-wrapper').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to draft Twitter/Facebook posts, <a id=\"socializer-login\" href=\"#\">log into Gawker Socializer</a> with your work email</h4>\n  </div>\n</div>\n");
       return $('#socializer-login').on('click', (function(_this) {
         return function() {
-          var checkChild, child, timer;
-          child = window.open("" + _this.root + "/signin");
-          checkChild = function() {
-            if ((child.location == null) || child.closed) {
-              console.log('signin window closed');
-              clearInterval(timer);
-              $('.socializer-login-prompt').remove();
-              return callback();
-            }
-          };
-          return timer = setInterval(checkChild, 500);
+          return chrome.runtime.sendMessage({
+            method: 'login'
+          });
         };
       })(this));
     },
@@ -289,6 +287,12 @@
       }, 100);
     }
   };
+
+  chrome.runtime.onMessage.addListener(function(request, sender, callback) {
+    if (request.method === 'loginComplete') {
+      return Socializer.initEdit();
+    }
+  });
 
   init();
 

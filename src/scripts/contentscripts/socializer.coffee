@@ -8,21 +8,25 @@ Socializer =
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          @checkLogin (logged_in) =>
-            if logged_in
-              view.addFields =>
-                @fetchSocial(@getPostId())
-              # @addEvents()
-              $('.save.submit').on 'click', =>
-                @saveSocial(set_to_publish: false)
-              $('.publish.submit').on 'click', =>
-                @saveSocial(set_to_publish: true)
-            else
-              view.loginPrompt =>
-                @init(@kinja)
-        # else
-        #   view.removeFields()
+          @initEdit()
     , 500
+
+  initEdit: ->
+    @checkLogin (logged_in) =>
+      $('.socializer-login-prompt').remove()
+      if logged_in
+        view.addFields =>
+          @fetchSocial(@getPostId())
+        # @addEvents()
+        $('.save.submit').on 'click', =>
+          @saveSocial(set_to_publish: false)
+        $('.publish.submit').on 'click', =>
+          @saveSocial(set_to_publish: true)
+      else
+        view.loginPrompt =>
+          @init(@kinja)
+  # else
+  #   view.removeFields()
 
   checkLogin: (callback) ->
     $.ajax
