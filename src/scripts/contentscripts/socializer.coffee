@@ -59,7 +59,7 @@ Socializer =
         @latestSocial = data
         return unless data?
         $('#tweet-box').val(data.tweet)
-        $('#facebook-box').val(data.fb_post)
+        $('#ap_facebook-box').val(data.fb_post)
       error: ->
       complete: ->
 
@@ -114,7 +114,7 @@ Socializer =
   getData: ->
     tweet: $('#tweet-box').val()
     author: @getAuthors()
-    fb_post: $('#facebook-box').val()
+    fb_post: $('#ap_facebook-box').val()
     publish_at: @getPublishTime()
     url: @getURL()
     title: $('.editable-headline').first().text()

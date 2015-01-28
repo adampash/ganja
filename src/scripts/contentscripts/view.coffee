@@ -26,12 +26,12 @@ view =
     console.log 'add fields now'
     $('input.js_taglist-input').attr('tabindex', 3)
     # $('[TabIndex*="5"]').attr('tabindex', -1)
-    iconStyle = 'style="margin: .5rem 0; opacity: 0.5;"'
+    iconStyle = 'style="margin: .5rem 0; opacity: 0.5; display: inline-block !important;"'
     textareaStyle = 'class="js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"'
     # $('div.row.editor-actions').after(
     $('div.editor-taglist-wrapper').after(
       """
-        <div class="row collapse social_row" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+        <div class="row collapse ap_social_row" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
           <div class="column">
             <span class="js_tag tag">
               <i class="icon icon-twitter" #{iconStyle}></i>
@@ -45,19 +45,19 @@ view =
         </div>
 
 
-        <div class="row collapse social_row" style="border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+        <div class="row collapse ap_social_row" style="border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
           <div class="column">
             <span class="js_tag tag">
               <i class="icon icon-facebook" #{iconStyle}></i>
               <div class="js_taglist taglist">
-                <textarea id="facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
+                <textarea id="ap_facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
               </div>
             </span>
           </div>
         </div>
 
 
-        <div style="margin-top: 10px;" class="columns small-12 medium-12>
+        <div style="margin-top: 10px;" class="columns small-12 medium-12">
           <div class="selector-container right">
             <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
           </div>
@@ -65,7 +65,7 @@ view =
 
       """
     )
-    $('.social_row').on 'click', (el) ->
+    $('.ap_social_row').on 'click', (el) ->
       $(el.currentTarget).find('textarea').focus()
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
