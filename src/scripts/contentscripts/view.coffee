@@ -24,6 +24,8 @@ view =
 
   addFields: (callback) ->
     console.log 'add fields now'
+    $('input.js_taglist-input').attr('tabindex', 3)
+    # $('[TabIndex*="5"]').attr('tabindex', -1)
     iconStyle = 'style="margin: .5rem 0; opacity: 0.5;"'
     textareaStyle = 'class="js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"'
     # $('div.row.editor-actions').after(
@@ -35,7 +37,7 @@ view =
               <i class="icon icon-twitter" #{iconStyle}></i>
               <div class="js_taglist taglist">
                 <span class="js_taglist-tags taglist-tags mbn no-shadow"></span>
-                <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="6"></textarea>
+                <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="4"></textarea>
                 <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
               </div>
             </span>
@@ -48,7 +50,7 @@ view =
             <span class="js_tag tag">
               <i class="icon icon-facebook" #{iconStyle}></i>
               <div class="js_taglist taglist">
-                <textarea id="facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="7"></textarea>
+                <textarea id="facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
               </div>
             </span>
           </div>
