@@ -229,7 +229,7 @@ view =
         </div>
 
 
-        <div class="row collapse ap_social_row" style="border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+        <div class="row collapse ap_social_row" style="margin-top: 10px; padding-top: 10px;">
           <div class="column">
             <span class="js_tag tag">
               <i class="icon icon-facebook" #{iconStyle}></i>
@@ -240,12 +240,6 @@ view =
           </div>
         </div>
 
-
-        <div style="margin-top: 10px;" class="columns small-12 medium-12">
-          <div class="selector-container right">
-            <div id="social-save-status" style="margin: 5px 20px 0 0; float: left; width: 300px; font-size: 14px; font-family: ProximaNovaCond;"></div>
-          </div>
-        </div>
 
       """
     )
