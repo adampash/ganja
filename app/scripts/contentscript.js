@@ -1,5 +1,5 @@
 (function() {
-  var Socializer, helper, init, view;
+  var Socializer, dev, helper, init, root, view;
 
   helper = {
     retrieveWindowVariables: function(variables) {
@@ -32,8 +32,16 @@
     }
   };
 
+  dev = false;
+
+  if (dev) {
+    root = "http://localhost:3000";
+  } else {
+    root = "http://gawker-socializer.herokuapp.com";
+  }
+
   Socializer = {
-    root: 'http://localhost:3000',
+    root: root,
     init: function(kinja) {
       this.kinja = kinja;
       this.editing = false;
@@ -214,8 +222,16 @@
     }
   };
 
+  dev = false;
+
+  if (dev) {
+    root = "http://localhost:3000";
+  } else {
+    root = "http://gawker-socializer.herokuapp.com";
+  }
+
   view = {
-    root: 'http://localhost:3000',
+    root: root,
     loginPrompt: function(callback) {
       $('div.editor-taglist-wrapper').after("<div class=\"row socializer-login-prompt\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"columns medium-12 small-12\">\n    <h4>In order to draft Twitter/Facebook posts, <a id=\"socializer-login\" href=\"#\">log into Gawker Socializer</a> with your work email</h4>\n  </div>\n</div>\n");
       return $('#socializer-login').on('click', (function(_this) {

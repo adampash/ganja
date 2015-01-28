@@ -1,4 +1,9 @@
-root = "http://localhost:3000"
+dev = false
+
+if dev
+  root = "http://localhost:3000"
+else
+  root = "http://gawker-socializer.herokuapp.com"
 
 chrome.runtime.onInstalled.addListener (details) ->
   console.log('previousVersion', details.previousVersion)
@@ -34,7 +39,7 @@ tabUpdated = (tabId, changeInfo, tab) ->
     closeTab(tab, tabId, senderTab)
 
 closeTab = (tab, tabId, senderTab) ->
-  if tab.url.match /^http:\/\/localhost:3000\//
+  if tab.url.match /^http:\/\/(localhost:3000|gawker-socializer.herokuapp.com)\/login_success/
     console.log 'now close the tab and go back to editor'
     chrome.tabs.remove(tabId)
     chrome.tabs.update(senderTab.id, active: true)
@@ -56,7 +61,7 @@ saveSocial = (params) ->
   params.publish_at = new Date(params.publish_at)
   console.log params
   $.ajax
-    url: "http://localhost:3000/stories"
+    url: "#{root}/stories"
     method: "POST"
     data: params
     success: (data) =>
@@ -69,7 +74,7 @@ updatePublishTime = (params) ->
   params.publish_at = new Date(params.publish_at)
   console.log params
   $.ajax
-    url: "http://localhost:3000/stories/update_pub"
+    url: "#{root}/stories/update_pub"
     method: "POST"
     data: params
     success: (data) =>

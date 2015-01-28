@@ -1,5 +1,12 @@
+dev = false
+
+if dev
+  root = "http://localhost:3000"
+else
+  root = "http://gawker-socializer.herokuapp.com"
+
 view =
-  root: 'http://localhost:3000'
+  root: root
 
   loginPrompt: (callback) ->
     $('div.editor-taglist-wrapper').after(

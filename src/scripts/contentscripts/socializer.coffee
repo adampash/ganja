@@ -1,5 +1,12 @@
+dev = false
+
+if dev
+  root = "http://localhost:3000"
+else
+  root = "http://gawker-socializer.herokuapp.com"
+
 Socializer =
-  root: 'http://localhost:3000'
+  root: root
 
   init: (@kinja) ->
     @editing = false

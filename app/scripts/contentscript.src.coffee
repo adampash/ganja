@@ -33,8 +33,15 @@ helper =
     script.appendChild(document.createTextNode(scriptContent))
     (document.body || document.head || document.documentElement).appendChild(script)
 
+dev = false
+
+if dev
+  root = "http://localhost:3000"
+else
+  root = "http://gawker-socializer.herokuapp.com"
+
 Socializer =
-  root: 'http://localhost:3000'
+  root: root
 
   init: (@kinja) ->
     @editing = false
@@ -175,8 +182,15 @@ Socializer =
     else
       $('#social-save-status').empty()
 
+dev = false
+
+if dev
+  root = "http://localhost:3000"
+else
+  root = "http://gawker-socializer.herokuapp.com"
+
 view =
-  root: 'http://localhost:3000'
+  root: root
 
   loginPrompt: (callback) ->
     $('div.editor-taglist-wrapper').after(
