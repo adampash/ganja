@@ -44,7 +44,9 @@
           if (event.data.postModel != null) {
             console.log("Content script received: " + event.data.text);
             _this.post = event.data.postModel;
-            return callback();
+            if (callback != null) {
+              return callback();
+            }
           }
         };
       })(this), false);

@@ -45,7 +45,7 @@ Post =
       if event.data.postModel?
         console.log("Content script received: " + event.data.text)
         @post = event.data.postModel
-        callback()
+        callback() if callback?
         # port.postMessage(event.data.text)
     , false
 
