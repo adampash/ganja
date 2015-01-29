@@ -63,10 +63,6 @@ view =
       $(el.currentTarget).find('textarea').focus()
     $('#tweet-box').on 'keyup', =>
       @setCharCount()
-    $('#social-save').on 'click', ->
-      Socializer.saveSocial(set_to_publish: true)
-    $('#social-draft').on 'click', ->
-      Socializer.saveSocial(set_to_publish: false)
     setTimeout =>
       @setCharCount()
     , 500

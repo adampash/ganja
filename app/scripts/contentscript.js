@@ -1,5 +1,5 @@
 (function() {
-  var Socializer, dev, helper, init, root, view;
+  var Post, Socializer, dev, helper, init, root, view;
 
   helper = {
     retrieveWindowVariables: function(variables) {
@@ -32,6 +32,98 @@
     }
   };
 
+  Post = {
+    refresh: function(callback) {
+      var port, ret, script, scriptContent;
+      port = chrome.runtime.connect();
+      window.addEventListener("message", (function(_this) {
+        return function(event) {
+          if (event.source !== window) {
+            return;
+          }
+          if (event.data.postModel != null) {
+            console.log("Content script received: " + event.data.text);
+            _this.post = event.data.postModel;
+            return callback();
+          }
+        };
+      })(this), false);
+      ret = {};
+      scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');";
+      script = document.createElement('script');
+      script.id = 'tmpScript';
+      script.appendChild(document.createTextNode(scriptContent));
+      return (document.body || document.head || document.documentElement).appendChild(script);
+    },
+    getData: function() {
+      return {
+        tweet: $('#tweet-box').val(),
+        author: this.getAuthors(),
+        fb_post: $('#ap_facebook-box').val(),
+        publish_at: this.getPublishTime(),
+        url: this.getURL(),
+        title: $('.editable-headline').first().text(),
+        domain: this.getDomain(),
+        kinja_id: this.getPostId()
+      };
+    },
+    getURL: function() {
+      var url;
+      url = this.post.permalink.replace(/\/preview\//, '/').split('?')[0];
+      if (url.indexOf('?') !== -1) {
+        return url.split('?')[0];
+      } else {
+        return url;
+      }
+    },
+    getAuthors: function() {
+      return this.post.displayAuthorObject.displayName;
+    },
+    getPublishTime: function() {
+      return this.post.publishTimeMillis;
+    },
+    getDomain: function() {
+      return this.getBlogs(function(blogs) {
+        return blogs[$('button.group-blog-container span').not('.hide').text()];
+      });
+    },
+    getPostId: function() {
+      return this.post.id;
+    },
+    getBlogs: function(complete) {
+      var blogs, index, sites, url, urls, yourBlogs, _i, _len;
+      console.log('getting blogs');
+      urls = [];
+      sites = [];
+      yourBlogs = $('ul.myblogs .js_ownblog a');
+      if (yourBlogs.length === 0) {
+        console.log('no blogs to get');
+        return setTimeout((function(_this) {
+          return function() {
+            return _this.post.getBlogs(complete);
+          };
+        })(this), 1000);
+      }
+      yourBlogs.each(function(index) {
+        var $el;
+        $el = $(this);
+        urls.push($el.attr('href').replace('//', ''));
+        return sites.push($el.text());
+      });
+      urls = _.uniq(urls);
+      sites = _.uniq(sites);
+      blogs = {};
+      for (index = _i = 0, _len = urls.length; _i < _len; index = ++_i) {
+        url = urls[index];
+        blogs[sites[index]] = url;
+      }
+      return complete(blogs);
+    },
+    getStatus: function() {
+      return this.post.status;
+    }
+  };
+
   dev = true;
 
   if (dev) {
@@ -44,39 +136,18 @@
     root: root,
     init: function() {
       this.editing = false;
+      this.post = Post;
       return this.interval = setInterval((function(_this) {
         return function() {
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
-              _this.refreshModelData();
+              _this.post.refresh();
               return _this.initEdit();
             }
           }
         };
       })(this), 500);
-    },
-    refreshModelData: function() {
-      var port, ret, script, scriptContent;
-      port = chrome.runtime.connect();
-      window.addEventListener("message", (function(_this) {
-        return function(event) {
-          if (event.source !== window) {
-            return;
-          }
-          if (event.data.postModel != null) {
-            console.log("Content script received: " + event.data.text);
-            _this.postModel = event.data.postModel;
-            debugger;
-          }
-        };
-      })(this), false);
-      ret = {};
-      scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');";
-      script = document.createElement('script');
-      script.id = 'tmpScript';
-      script.appendChild(document.createTextNode(scriptContent));
-      return (document.body || document.head || document.documentElement).appendChild(script);
     },
     initEdit: function() {
       return this.checkLogin((function(_this) {
@@ -84,18 +155,39 @@
           $('.socializer-login-prompt').remove();
           if (logged_in) {
             view.addFields(function() {
-              return _this.fetchSocial(_this.getPostId());
+              return _this.fetchSocial(_this.post.getPostId());
             });
-            $('.save.submit').on('click', function() {
-              return _this.saveSocial({
-                set_to_publish: false
+            if (_this.post.getStatus() === "DRAFT") {
+              $('.publish.submit').on('click', function() {
+                return setTimeout(function() {
+                  return $('.kinja-modal button.js_submit').on('click', function() {
+                    return _this.saveSocial({
+                      set_to_publish: true
+                    });
+                  });
+                }, 100);
               });
-            });
-            return $('.publish.submit').on('click', function() {
-              return _this.saveSocial({
-                set_to_publish: true
+              return $('.save.submit').on('click', function() {
+                return _this.saveSocial({
+                  set_to_publish: false
+                });
               });
-            });
+            } else {
+              $('.save.submit').on('click', function() {
+                return setTimeout(function() {
+                  return $('.kinja-modal button.js_submit').on('click', function() {
+                    return _this.saveSocial({
+                      set_to_publish: false
+                    });
+                  });
+                }, 100);
+              });
+              return $('.publish.submit').on('click', function() {
+                return _this.saveSocial({
+                  set_to_publish: true
+                });
+              });
+            }
           } else {
             return view.loginPrompt(function() {
               return _this.init();
@@ -120,8 +212,8 @@
     updatePublishTime: function() {
       var params;
       params = {
-        publish_at: this.getPublishTime(),
-        kinja_id: this.getPostId(),
+        publish_at: this.post.getPublishTime(),
+        kinja_id: this.post.getPostId(),
         method: 'updatePublishTime'
       };
       return chrome.runtime.sendMessage(params);
@@ -150,80 +242,19 @@
     countdown: function() {
       return 140 - 24 - $('#tweet-box').val().length;
     },
-    getBlogs: function(complete) {
-      var blogs, index, sites, url, urls, yourBlogs, _i, _len;
-      console.log('getting blogs');
-      urls = [];
-      sites = [];
-      yourBlogs = $('ul.myblogs .js_ownblog a');
-      if (yourBlogs.length === 0) {
-        console.log('no blogs to get');
-        return setTimeout((function(_this) {
-          return function() {
-            return _this.getBlogs(complete);
-          };
-        })(this), 1000);
-      }
-      yourBlogs.each(function(index) {
-        var $el;
-        $el = $(this);
-        urls.push($el.attr('href').replace('//', ''));
-        return sites.push($el.text());
-      });
-      urls = _.uniq(urls);
-      sites = _.uniq(sites);
-      blogs = {};
-      for (index = _i = 0, _len = urls.length; _i < _len; index = ++_i) {
-        url = urls[index];
-        blogs[sites[index]] = url;
-      }
-      return complete(blogs);
-    },
-    getURL: function() {
-      var url;
-      url = this.postModel.permalink.replace(/\/preview\//, '/').split('?')[0];
-      if (url.indexOf('?') !== -1) {
-        return url.split('?')[0];
-      } else {
-        return url;
-      }
-    },
-    getAuthors: function() {
-      return this.postModel.displayAuthorObject.displayName;
-    },
-    getPublishTime: function() {
-      return this.postModel.publishTimeMillis;
-    },
-    getDomain: function() {
-      return this.getBlogs(function(blogs) {
-        return blogs[$('button.group-blog-container span').not('.hide').text()];
-      });
-    },
-    getPostId: function() {
-      return this.postModel.id;
-    },
     verifyTimeSync: function() {},
-    getData: function() {
-      return {
-        tweet: $('#tweet-box').val(),
-        author: this.getAuthors(),
-        fb_post: $('#ap_facebook-box').val(),
-        publish_at: this.getPublishTime(),
-        url: this.getURL(),
-        title: $('.editable-headline').first().text(),
-        domain: this.getDomain(),
-        kinja_id: this.getPostId()
-      };
-    },
     saveSocial: function(opts) {
-      var params;
-      this.refreshModelData();
-      params = this.getData();
-      params.set_to_publish = opts.set_to_publish;
-      params.method = 'saveSocial';
-      return chrome.runtime.sendMessage(params, function(response) {
-        return console.log(response);
-      });
+      return this.post.refresh((function(_this) {
+        return function() {
+          var params;
+          params = _this.post.getData();
+          params.set_to_publish = opts.set_to_publish;
+          params.method = 'saveSocial';
+          return chrome.runtime.sendMessage(params, function(response) {
+            return console.log(response);
+          });
+        };
+      })(this));
     },
     hasSocialPosts: function(data) {
       return data.tweet !== "" || data.fb_post !== "";
@@ -283,16 +314,6 @@
           return _this.setCharCount();
         };
       })(this));
-      $('#social-save').on('click', function() {
-        return Socializer.saveSocial({
-          set_to_publish: true
-        });
-      });
-      $('#social-draft').on('click', function() {
-        return Socializer.saveSocial({
-          set_to_publish: false
-        });
-      });
       setTimeout((function(_this) {
         return function() {
           return _this.setCharCount();

@@ -10,50 +10,38 @@ Socializer =
 
   init: () ->
     @editing = false
-    # @updatePublishTime() if window.location.search.match(/^\?rev=/)# if window.location.href.match(/\/preview\//)
+    @post = Post
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          @refreshModelData()
+          @post.refresh()
           @initEdit()
     , 500
-
-  refreshModelData: ->
-    port = chrome.runtime.connect()
-
-    window.addEventListener "message", (event) =>
-      # We only accept messages from ourselves
-      if event.source != window
-        return
-
-      if event.data.postModel?
-        console.log("Content script received: " + event.data.text)
-        @postModel = event.data.postModel
-        debugger
-        # port.postMessage(event.data.text)
-    , false
-
-    ret = {}
-
-    scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');"
-
-    script = document.createElement('script')
-    script.id = 'tmpScript'
-    script.appendChild(document.createTextNode(scriptContent))
-    (document.body || document.head || document.documentElement).appendChild(script)
 
   initEdit: ->
     @checkLogin (logged_in) =>
       $('.socializer-login-prompt').remove()
       if logged_in
         view.addFields =>
-          @fetchSocial(@getPostId())
+          @fetchSocial(@post.getPostId())
         # @addEvents()
-        $('.save.submit').on 'click', =>
-          @saveSocial(set_to_publish: false)
-        $('.publish.submit').on 'click', =>
-          @saveSocial(set_to_publish: true)
+        if @post.getStatus() is "DRAFT"
+          $('.publish.submit').on 'click', =>
+            setTimeout =>
+              $('.kinja-modal button.js_submit').on 'click', =>
+                @saveSocial(set_to_publish: true)
+            , 100
+          $('.save.submit').on 'click', =>
+            @saveSocial(set_to_publish: false)
+        else
+          $('.save.submit').on 'click', =>
+            setTimeout =>
+              $('.kinja-modal button.js_submit').on 'click', =>
+                @saveSocial(set_to_publish: false)
+            , 100
+          $('.publish.submit').on 'click', =>
+            @saveSocial(set_to_publish: true)
       else
         view.loginPrompt =>
           @init()
@@ -71,8 +59,8 @@ Socializer =
 
   updatePublishTime: ->
     params =
-      publish_at: @getPublishTime()
-      kinja_id: @getPostId()
+      publish_at: @post.getPublishTime()
+      kinja_id: @post.getPostId()
       method: 'updatePublishTime'
     chrome.runtime.sendMessage params
 
@@ -94,71 +82,15 @@ Socializer =
   countdown: ->
     140 - 24 - $('#tweet-box').val().length
 
-  getBlogs: (complete) ->
-    console.log 'getting blogs'
-    urls = []
-    sites = []
-    yourBlogs = $('ul.myblogs .js_ownblog a')
-    if yourBlogs.length is 0
-      console.log 'no blogs to get'
-      return setTimeout =>
-        @getBlogs(complete)
-      , 1000
-    yourBlogs.each (index) ->
-      $el = $(@)
-      urls.push $el.attr('href').replace('//', '')
-      sites.push $el.text()
-
-    urls = _.uniq urls
-    sites = _.uniq sites
-
-    blogs = {}
-    for url, index in urls
-      blogs[sites[index]] = url
-
-    complete(blogs)
-
-  getURL: ->
-    url = @postModel.permalink.replace(/\/preview\//, '/').split('?')[0]
-    if url.indexOf('?') != -1 then url.split('?')[0] else url
-    # window.location.href.replace(/\/preview\//, '/').split('?')[0]
-
-  getAuthors: ->
-    @postModel.displayAuthorObject.displayName
-    # @kinja.postMeta.authors
-
-  getPublishTime: ->
-    @postModel.publishTimeMillis
-    # @kinja.postMeta.post.publishTimeMillis
-
-  getDomain: ->
-    @getBlogs (blogs) ->
-      blogs[$('button.group-blog-container span').not('.hide').text()]
-
-  getPostId: ->
-    @postModel.id
-    # @kinja.postMeta.postId
-
   verifyTimeSync: ->
 
-  getData: ->
-    tweet: $('#tweet-box').val()
-    author: @getAuthors()
-    fb_post: $('#ap_facebook-box').val()
-    publish_at: @getPublishTime()
-    url: @getURL()
-    title: $('.editable-headline').first().text()
-    domain: @getDomain()
-    kinja_id: @getPostId()
-
   saveSocial: (opts) ->
-    # $('#social-save-status').show().text("Saving...")
-    @refreshModelData()
-    params = @getData()
-    params.set_to_publish = opts.set_to_publish
-    params.method = 'saveSocial'
-    chrome.runtime.sendMessage params, (response) ->
-      console.log(response)
+    @post.refresh =>
+      params = @post.getData()
+      params.set_to_publish = opts.set_to_publish
+      params.method = 'saveSocial'
+      chrome.runtime.sendMessage params, (response) ->
+        console.log(response)
 
   hasSocialPosts: (data) ->
     data.tweet != "" or data.fb_post != ""
