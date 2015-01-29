@@ -156,7 +156,7 @@
         return function(logged_in) {
           $('.socializer-login-prompt').remove();
           if (logged_in) {
-            view.addFields(function() {
+            view.addFields(_this.post.getPostId() != null, function() {
               return _this.fetchSocial(_this.post.getPostId());
             });
             if (_this.post.getStatus() === "DRAFT") {
@@ -301,13 +301,19 @@
         };
       })(this));
     },
-    addFields: function(callback) {
-      var iconStyle, textareaStyle;
+    addFields: function(canEdit, callback) {
+      var content, iconStyle, message, textareaStyle;
       console.log('add fields now');
       $('input.js_taglist-input').attr('tabindex', 3);
       iconStyle = 'style="margin: .5rem 0; opacity: 0.5; display: inline-block !important;"';
-      textareaStyle = 'class="js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"';
-      $('div.editor-taglist-wrapper').after("<div class=\"row collapse ap_social_row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n  <div class=\"column\">\n    <span class=\"js_tag tag\">\n      <i class=\"icon icon-twitter\" " + iconStyle + "></i>\n      <div class=\"js_taglist taglist\">\n        <span class=\"js_taglist-tags taglist-tags mbn no-shadow\"></span>\n        <textarea id=\"tweet-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"4\"></textarea>\n        <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n      </div>\n    </span>\n  </div>\n</div>\n\n\n<div class=\"row collapse ap_social_row\" style=\"margin-top: 10px; padding-top: 10px;\">\n  <div class=\"column\">\n    <span class=\"js_tag tag\">\n      <i class=\"icon icon-facebook\" " + iconStyle + "></i>\n      <div class=\"js_taglist taglist\">\n        <textarea id=\"ap_facebook-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"4\"></textarea>\n      </div>\n    </span>\n  </div>\n</div>\n\n");
+      textareaStyle = 'class="ap_social_textarea js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"';
+      message = "";
+      if (canEdit) {
+        content = "<div style=\"position: relative;\">\n  " + message + "\n  <div class=\"row collapse ap_social_row\" style=\"border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;\">\n    <div class=\"column\">\n      <span class=\"js_tag tag\">\n        <i class=\"icon icon-twitter\" " + iconStyle + "></i>\n        <div class=\"js_taglist taglist\">\n          <span class=\"js_taglist-tags taglist-tags mbn no-shadow\"></span>\n          <textarea id=\"tweet-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Tweet your words\" value=\"\" tabindex=\"4\"></textarea>\n          <span class=\"tweet-char-counter\" style=\"position: absolute; right: 30px; bottom: 20px; color: #999999;\"></span>\n        </div>\n      </span>\n    </div>\n  </div>\n\n\n  <div class=\"row collapse ap_social_row\" style=\"margin-top: 10px; padding-top: 10px;\">\n    <div class=\"column\">\n      <span class=\"js_tag tag\">\n        <i class=\"icon icon-facebook\" " + iconStyle + "></i>\n        <div class=\"js_taglist taglist\">\n          <textarea id=\"ap_facebook-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"4\"></textarea>\n        </div>\n      </span>\n    </div>\n  </div>\n</div>";
+      } else {
+        content = '<h5 style="text-align: center; color: #999;">Save your first draft to edit social posts</h5>';
+      }
+      $('div.editor-taglist-wrapper').after(content);
       $('.ap_social_row').on('click', function(el) {
         return $(el.currentTarget).find('textarea').focus();
       });

@@ -23,7 +23,7 @@ Socializer =
     @checkLogin (logged_in) =>
       $('.socializer-login-prompt').remove()
       if logged_in
-        view.addFields =>
+        view.addFields @post.getPostId()?, =>
           @fetchSocial(@post.getPostId())
         # @addEvents()
         if @post.getStatus() is "DRAFT"
