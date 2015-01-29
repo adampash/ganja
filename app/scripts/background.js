@@ -1,7 +1,7 @@
 (function() {
   var closeTab, dev, login, loginCallback, loginTab, removeListener, root, saveSocial, senderTab, tabClosed, tabUpdated, updatePublishTime;
 
-  dev = false;
+  dev = true;
 
   if (dev) {
     root = "http://localhost:3000";

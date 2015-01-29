@@ -1,4 +1,4 @@
-dev = false
+dev = true
 
 if dev
   root = "http://localhost:3000"

@@ -32,7 +32,7 @@
     }
   };
 
-  dev = false;
+  dev = true;
 
   if (dev) {
     root = "http://localhost:3000";
@@ -42,22 +42,41 @@
 
   Socializer = {
     root: root,
-    init: function(kinja) {
-      this.kinja = kinja;
+    init: function() {
       this.editing = false;
-      if (window.location.search.match(/^\?rev=/)) {
-        this.updatePublishTime();
-      }
       return this.interval = setInterval((function(_this) {
         return function() {
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
+              _this.refreshModelData();
               return _this.initEdit();
             }
           }
         };
       })(this), 500);
+    },
+    refreshModelData: function() {
+      var port, ret, script, scriptContent;
+      port = chrome.runtime.connect();
+      window.addEventListener("message", (function(_this) {
+        return function(event) {
+          if (event.source !== window) {
+            return;
+          }
+          if (event.data.postModel != null) {
+            console.log("Content script received: " + event.data.text);
+            _this.postModel = event.data.postModel;
+            debugger;
+          }
+        };
+      })(this), false);
+      ret = {};
+      scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');";
+      script = document.createElement('script');
+      script.id = 'tmpScript';
+      script.appendChild(document.createTextNode(scriptContent));
+      return (document.body || document.head || document.documentElement).appendChild(script);
     },
     initEdit: function() {
       return this.checkLogin((function(_this) {
@@ -79,7 +98,7 @@
             });
           } else {
             return view.loginPrompt(function() {
-              return _this.init(_this.kinja);
+              return _this.init();
             });
           }
         };
@@ -161,13 +180,19 @@
       return complete(blogs);
     },
     getURL: function() {
-      return window.location.href.replace(/\/preview\//, '/').split('?')[0];
+      var url;
+      url = this.postModel.permalink.replace(/\/preview\//, '/').split('?')[0];
+      if (url.indexOf('?') !== -1) {
+        return url.split('?')[0];
+      } else {
+        return url;
+      }
     },
     getAuthors: function() {
-      return this.kinja.postMeta.authors;
+      return this.postModel.displayAuthorObject.displayName;
     },
     getPublishTime: function() {
-      return this.kinja.postMeta.post.publishTimeMillis;
+      return this.postModel.publishTimeMillis;
     },
     getDomain: function() {
       return this.getBlogs(function(blogs) {
@@ -175,7 +200,7 @@
       });
     },
     getPostId: function() {
-      return this.kinja.postMeta.postId;
+      return this.postModel.id;
     },
     verifyTimeSync: function() {},
     getData: function() {
@@ -192,6 +217,7 @@
     },
     saveSocial: function(opts) {
       var params;
+      this.refreshModelData();
       params = this.getData();
       params.set_to_publish = opts.set_to_publish;
       params.method = 'saveSocial';
@@ -222,7 +248,7 @@
     }
   };
 
-  dev = false;
+  dev = true;
 
   if (dev) {
     root = "http://localhost:3000";
@@ -294,15 +320,7 @@
   };
 
   init = function() {
-    var pageWin;
-    pageWin = helper.retrieveWindowVariables(['kinja']);
-    if ((pageWin.kinja != null) && (pageWin.kinja.postMeta != null)) {
-      return Socializer.init(pageWin.kinja);
-    } else {
-      return setTimeout(function() {
-        return init();
-      }, 100);
-    }
+    return Socializer.init();
   };
 
   chrome.runtime.onMessage.addListener(function(request, sender, callback) {

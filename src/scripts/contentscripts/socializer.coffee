@@ -1,4 +1,4 @@
-dev = false
+dev = true
 
 if dev
   root = "http://localhost:3000"
@@ -8,15 +8,40 @@ else
 Socializer =
   root: root
 
-  init: (@kinja) ->
+  init: () ->
     @editing = false
-    @updatePublishTime() if window.location.search.match(/^\?rev=/)# if window.location.href.match(/\/preview\//)
+    # @updatePublishTime() if window.location.search.match(/^\?rev=/)# if window.location.href.match(/\/preview\//)
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
+          @refreshModelData()
           @initEdit()
     , 500
+
+  refreshModelData: ->
+    port = chrome.runtime.connect()
+
+    window.addEventListener "message", (event) =>
+      # We only accept messages from ourselves
+      if event.source != window
+        return
+
+      if event.data.postModel?
+        console.log("Content script received: " + event.data.text)
+        @postModel = event.data.postModel
+        debugger
+        # port.postMessage(event.data.text)
+    , false
+
+    ret = {}
+
+    scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');"
+
+    script = document.createElement('script')
+    script.id = 'tmpScript'
+    script.appendChild(document.createTextNode(scriptContent))
+    (document.body || document.head || document.documentElement).appendChild(script)
 
   initEdit: ->
     @checkLogin (logged_in) =>
@@ -31,7 +56,7 @@ Socializer =
           @saveSocial(set_to_publish: true)
       else
         view.loginPrompt =>
-          @init(@kinja)
+          @init()
   # else
   #   view.removeFields()
 
@@ -94,20 +119,25 @@ Socializer =
     complete(blogs)
 
   getURL: ->
-    window.location.href.replace(/\/preview\//, '/').split('?')[0]
+    url = @postModel.permalink.replace(/\/preview\//, '/').split('?')[0]
+    if url.indexOf('?') != -1 then url.split('?')[0] else url
+    # window.location.href.replace(/\/preview\//, '/').split('?')[0]
 
   getAuthors: ->
-    @kinja.postMeta.authors
+    @postModel.displayAuthorObject.displayName
+    # @kinja.postMeta.authors
 
   getPublishTime: ->
-    @kinja.postMeta.post.publishTimeMillis
+    @postModel.publishTimeMillis
+    # @kinja.postMeta.post.publishTimeMillis
 
   getDomain: ->
     @getBlogs (blogs) ->
       blogs[$('button.group-blog-container span').not('.hide').text()]
 
   getPostId: ->
-    @kinja.postMeta.postId
+    @postModel.id
+    # @kinja.postMeta.postId
 
   verifyTimeSync: ->
 
@@ -123,6 +153,7 @@ Socializer =
 
   saveSocial: (opts) ->
     # $('#social-save-status').show().text("Saving...")
+    @refreshModelData()
     params = @getData()
     params.set_to_publish = opts.set_to_publish
     params.method = 'saveSocial'
