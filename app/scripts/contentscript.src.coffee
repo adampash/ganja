@@ -112,7 +112,7 @@ Post =
   getStatus: ->
     @post.status
 
-dev = true
+dev = false
 
 if dev
   root = "http://localhost:3000"
@@ -224,7 +224,7 @@ Socializer =
     else
       $('#social-save-status').empty()
 
-dev = true
+dev = false
 
 if dev
   root = "http://localhost:3000"

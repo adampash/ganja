@@ -124,7 +124,7 @@
     }
   };
 
-  dev = true;
+  dev = false;
 
   if (dev) {
     root = "http://localhost:3000";
@@ -279,7 +279,7 @@
     }
   };
 
-  dev = true;
+  dev = false;
 
   if (dev) {
     root = "http://localhost:3000";
