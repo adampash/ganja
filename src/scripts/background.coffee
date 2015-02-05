@@ -1,10 +1,3 @@
-dev = false
-
-if dev
-  root = "http://localhost:3000"
-else
-  root = "http://gawker-socializer.herokuapp.com"
-
 chrome.runtime.onInstalled.addListener (details) ->
   console.log('previousVersion', details.previousVersion)
 
@@ -27,7 +20,7 @@ login = (_senderTab) ->
   senderTab = _senderTab
   chrome.tabs.create
     windowId: null
-    url: "#{root}/signin"
+    url: "#{config.socializer_url()}/signin"
     index: senderTab.index + 1
     , (_tab) ->
       loginTab = _tab
@@ -61,7 +54,7 @@ saveSocial = (params) ->
   params.publish_at = new Date(params.publish_at)
   console.log params
   $.ajax
-    url: "#{root}/stories"
+    url: "#{config.socializer_url()}/stories"
     method: "POST"
     data: params
     success: (data) =>
@@ -74,7 +67,7 @@ updatePublishTime = (params) ->
   params.publish_at = new Date(params.publish_at)
   console.log params
   $.ajax
-    url: "#{root}/stories/update_pub"
+    url: "#{config.socializer_url()}/stories/update_pub"
     method: "POST"
     data: params
     success: (data) =>
@@ -82,4 +75,8 @@ updatePublishTime = (params) ->
     error: ->
       console.log 'something went wrong saving this'
 
-console.log('\'Allo \'Allo! Event Page');
+socket = io("#{config.whos_editing_url()}")
+
+socket.on 'connect', ->
+  console.log 'connected'
+  console.log socket.connected

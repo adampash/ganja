@@ -1,5 +1,5 @@
 (function() {
-  var Post, Socializer, dev, helper, init, root, view;
+  var Post, Socializer, helper, init, root, view;
 
   helper = {
     retrieveWindowVariables: function(variables) {
@@ -126,13 +126,7 @@
     }
   };
 
-  dev = false;
-
-  if (dev) {
-    root = "http://localhost:3000";
-  } else {
-    root = "http://gawker-socializer.herokuapp.com";
-  }
+  root = config.socializer_url();
 
   Socializer = {
     root: root,
@@ -281,13 +275,7 @@
     }
   };
 
-  dev = false;
-
-  if (dev) {
-    root = "http://localhost:3000";
-  } else {
-    root = "http://gawker-socializer.herokuapp.com";
-  }
+  root = config.socializer_url();
 
   view = {
     root: root,

@@ -1,9 +1,4 @@
-dev = false
-
-if dev
-  root = "http://localhost:3000"
-else
-  root = "http://gawker-socializer.herokuapp.com"
+root = config.socializer_url()
 
 view =
   root: root

@@ -1,13 +1,5 @@
 (function() {
-  var closeTab, dev, login, loginCallback, loginTab, removeListener, root, saveSocial, senderTab, tabClosed, tabUpdated, updatePublishTime;
-
-  dev = false;
-
-  if (dev) {
-    root = "http://localhost:3000";
-  } else {
-    root = "http://gawker-socializer.herokuapp.com";
-  }
+  var closeTab, login, loginCallback, loginTab, removeListener, saveSocial, senderTab, socket, tabClosed, tabUpdated, updatePublishTime;
 
   chrome.runtime.onInstalled.addListener(function(details) {
     return console.log('previousVersion', details.previousVersion);
@@ -38,7 +30,7 @@
     senderTab = _senderTab;
     chrome.tabs.create({
       windowId: null,
-      url: "" + root + "/signin",
+      url: "" + (config.socializer_url()) + "/signin",
       index: senderTab.index + 1
     }, function(_tab) {
       return loginTab = _tab;
@@ -85,7 +77,7 @@
     params.publish_at = new Date(params.publish_at);
     console.log(params);
     return $.ajax({
-      url: "" + root + "/stories",
+      url: "" + (config.socializer_url()) + "/stories",
       method: "POST",
       data: params,
       success: (function(_this) {
@@ -104,7 +96,7 @@
     params.publish_at = new Date(params.publish_at);
     console.log(params);
     return $.ajax({
-      url: "" + root + "/stories/update_pub",
+      url: "" + (config.socializer_url()) + "/stories/update_pub",
       method: "POST",
       data: params,
       success: (function(_this) {
@@ -118,7 +110,12 @@
     });
   };
 
-  console.log('\'Allo \'Allo! Event Page');
+  socket = io("" + (config.whos_editing_url()));
+
+  socket.on('connect', function() {
+    console.log('connected');
+    return console.log(socket.connected);
+  });
 
 }).call(this);
 

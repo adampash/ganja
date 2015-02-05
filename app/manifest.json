@@ -10,7 +10,9 @@
     "default_locale": "en",
     "background": {
         "scripts": [
+            "scripts/config.js",
             "scripts/jquery.js",
+            "scripts/socket.io.js",
             "scripts/chromereload.js",
             "scripts/background.js"
         ]
@@ -42,6 +44,7 @@
                 "styles/main.css"
             ],
             "js": [
+                "scripts/config.js",
                 "scripts/jquery.js",
                 "scripts/moment.js",
                 "scripts/underscore.js",
