@@ -5,8 +5,13 @@
     info_added: false,
     init: function() {
       return Dispatcher.on('post_refresh', function(post) {
+        var editor_text;
         if (!((post.permalink != null) || this.info_added)) {
-          return console.log('should add something to the bottom of the post');
+          console.log('should add something to the bottom of the post');
+          editor_text = $('.editor-inner').text();
+          if (editor_text.length === 1 && editor_text.charCodeAt(0) === 8203) {
+            return $('.editor-inner').html("<p><i>Contact the author of this post <a href=\"#\">via email</a>.</i></p>");
+          }
         }
       });
     }
