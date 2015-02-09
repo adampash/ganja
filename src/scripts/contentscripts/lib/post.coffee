@@ -10,6 +10,7 @@ Post =
       if event.data.postModel?
         console.log("Content script received: " + event.data.text)
         @post = event.data.postModel
+        Dispatcher.trigger('post_refresh', @post)
         callback() if callback?
         # port.postMessage(event.data.text)
     , false

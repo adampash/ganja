@@ -20,7 +20,6 @@ Socializer =
       if logged_in
         view.addFields @post.getPostId()?, =>
           @fetchSocial(@post.getPostId())
-        # @addEvents()
         if @post.getStatus() is "DRAFT"
           $('.publish.submit').on 'click', =>
             setTimeout =>
@@ -72,9 +71,14 @@ Socializer =
       complete: ->
 
   editorVisible: ->
-    $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
+    if $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
+      Dispatcher.trigger('editor_visible')
+      true
+    else
+      false
 
   countdown: ->
+    return unless $('#tweet-box').length > 0
     140 - 24 - $('#tweet-box').val().length
 
   verifyTimeSync: ->
