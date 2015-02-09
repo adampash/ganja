@@ -1,5 +1,16 @@
 (function() {
-  var Post, Socializer, helper, init, root, view;
+  var ContactInfo, Post, Socializer, helper, init, root, view;
+
+  ContactInfo = {
+    info_added: false,
+    init: function() {
+      return Dispatcher.on('post_refresh', function(post) {
+        if (!((post.permalink != null) || this.info_added)) {
+          return console.log('should add something to the bottom of the post');
+        }
+      });
+    }
+  };
 
   helper = {
     retrieveWindowVariables: function(variables) {
@@ -44,6 +55,7 @@
           if (event.data.postModel != null) {
             console.log("Content script received: " + event.data.text);
             _this.post = event.data.postModel;
+            Dispatcher.trigger('post_refresh', _this.post);
             if (callback != null) {
               return callback();
             }
@@ -233,9 +245,17 @@
       });
     },
     editorVisible: function() {
-      return $('div.editor:visible').length !== 0 && $('article.post.hentry:visible').length === 0;
+      if ($('div.editor:visible').length !== 0 && $('article.post.hentry:visible').length === 0) {
+        Dispatcher.trigger('editor_visible');
+        return true;
+      } else {
+        return false;
+      }
     },
     countdown: function() {
+      if (!($('#tweet-box').length > 0)) {
+        return;
+      }
       return 140 - 24 - $('#tweet-box').val().length;
     },
     verifyTimeSync: function() {},
@@ -336,8 +356,11 @@
     }
   };
 
+  this.Dispatcher = _.clone(Backbone.Events);
+
   init = function() {
-    return Socializer.init();
+    Socializer.init();
+    return ContactInfo.init();
   };
 
   chrome.runtime.onMessage.addListener(function(request, sender, callback) {

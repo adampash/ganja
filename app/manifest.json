@@ -46,8 +46,9 @@
             "js": [
                 "scripts/config.js",
                 "scripts/jquery.js",
-                "scripts/moment.js",
                 "scripts/underscore.js",
+                "scripts/backbone.js",
+                "scripts/moment.js",
                 "scripts/contentscript.js"
             ],
             "run_at": "document_end",

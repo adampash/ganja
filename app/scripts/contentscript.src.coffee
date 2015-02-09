@@ -1,3 +1,12 @@
+ContactInfo =
+  info_added: false
+  init: ->
+    Dispatcher.on 'post_refresh', (post) ->
+      unless post.permalink? or @info_added
+        console.log 'should add something to the bottom of the post'
+        # @info_added = true
+
+
 helper =
   retrieveWindowVariables: (variables) ->
     ret = {}
@@ -45,6 +54,7 @@ Post =
       if event.data.postModel?
         console.log("Content script received: " + event.data.text)
         @post = event.data.postModel
+        Dispatcher.trigger('post_refresh', @post)
         callback() if callback?
         # port.postMessage(event.data.text)
     , false
@@ -134,7 +144,6 @@ Socializer =
       if logged_in
         view.addFields @post.getPostId()?, =>
           @fetchSocial(@post.getPostId())
-        # @addEvents()
         if @post.getStatus() is "DRAFT"
           $('.publish.submit').on 'click', =>
             setTimeout =>
@@ -186,9 +195,14 @@ Socializer =
       complete: ->
 
   editorVisible: ->
-    $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
+    if $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
+      Dispatcher.trigger('editor_visible')
+      true
+    else
+      false
 
   countdown: ->
+    return unless $('#tweet-box').length > 0
     140 - 24 - $('#tweet-box').val().length
 
   verifyTimeSync: ->
@@ -298,20 +312,11 @@ view =
   removeFields: ->
     console.log 'remove fields now'
 
+@Dispatcher = _.clone(Backbone.Events)
+
 init = ->
   Socializer.init()
-  # pageWin = helper.retrieveWindowVariables(['kinja'])
-  # if pageWin.kinja? and pageWin.kinja.postMeta?
-  #   Socializer.init(pageWin.kinja)
-  #   # blogs = {}
-  #   # Socializer.getBlogs (_blogs) ->
-  #   #   blogs = _blogs
-  #   #   console.log blogs
-  #   # console.log Socializer.getPublishTime(pageWin.kinja)
-  # else
-  #   setTimeout ->
-  #     init()
-  #   , 100
+  ContactInfo.init()
 
 chrome.runtime.onMessage.addListener (request, sender, callback) ->
   if request.method is 'loginComplete'
