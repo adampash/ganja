@@ -4,16 +4,21 @@
   ContactInfo = {
     info_added: false,
     init: function() {
-      return Dispatcher.on('post_refresh', function(post) {
-        var editor_text;
-        if (!((post.permalink != null) || this.info_added)) {
-          console.log('should add something to the bottom of the post');
-          editor_text = $('.editor-inner').text();
-          if (editor_text.length === 1 && editor_text.charCodeAt(0) === 8203) {
-            return $('.editor-inner').html("<p><i>Contact the author of this post <a href=\"#\">via email</a>.</i></p>");
+      return Dispatcher.on('post_refresh', (function(_this) {
+        return function(post) {
+          var editor_text;
+          if (!((post.permalink != null) || _this.info_added)) {
+            console.log('should add something to the bottom of the post');
+            editor_text = $('.editor-inner').text();
+            if (editor_text.length === 1 && editor_text.charCodeAt(0) === 8203) {
+              return $('.editor-inner').append(_this.info());
+            }
           }
-        }
-      });
+        };
+      })(this));
+    },
+    info: function() {
+      return "<hr><p><i>Contact the author <a href=\"#\">here</a>.</i></p>";
     }
   };
 
