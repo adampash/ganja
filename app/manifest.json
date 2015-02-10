@@ -41,7 +41,7 @@
                 "http://*.gizmodo.com/*"
             ],
             "css": [
-                "styles/main.css"
+                "styles/socializer.css"
             ],
             "js": [
                 "scripts/config.js",
@@ -57,6 +57,7 @@
     ],
     "permissions": [
         "tabs",
+        "storage",
         "http://*/*",
         "https://*/*"
     ]

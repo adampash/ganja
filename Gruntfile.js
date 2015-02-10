@@ -148,7 +148,8 @@ module.exports = function (grunt) {
         files: {
           'app/scripts/config.js': ['src/scripts/config.coffee'],
           'app/scripts/contentscript.js': ['src/scripts/contentscripts/lib/*.coffee', 'src/scripts/contentscripts/main.coffee'],
-          'app/scripts/background.js': ['src/scripts/background.coffee']
+          'app/scripts/background.js': ['src/scripts/background.coffee'],
+          'app/scripts/options.js': ['src/scripts/options.coffee']
         }
       }
     },

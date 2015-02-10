@@ -1,6 +1,10 @@
 ContactInfo =
   info_added: false
   init: ->
+    chrome.storage.sync.get
+      contact_email: ''
+    , (items) =>
+      @email = items.contact_email
     Dispatcher.on 'post_refresh', (post) =>
       unless post.permalink? or @info_added
         console.log 'should add something to the bottom of the post'
@@ -9,5 +13,5 @@ ContactInfo =
           $('.editor-inner').append(@info())
 
   info: ->
-    "<hr><p><i>Contact the author <a href=\"#\">here</a>.</i></p>"
+    "<hr><p><i>Contact the author <a href=\"mailto:#{@email}\">here</a>.</i></p>"
 

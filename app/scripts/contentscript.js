@@ -4,6 +4,13 @@
   ContactInfo = {
     info_added: false,
     init: function() {
+      chrome.storage.sync.get({
+        contact_email: ''
+      }, (function(_this) {
+        return function(items) {
+          return _this.email = items.contact_email;
+        };
+      })(this));
       return Dispatcher.on('post_refresh', (function(_this) {
         return function(post) {
           var editor_text;
@@ -18,7 +25,7 @@
       })(this));
     },
     info: function() {
-      return "<hr><p><i>Contact the author <a href=\"#\">here</a>.</i></p>";
+      return "<hr><p><i>Contact the author <a href=\"mailto:" + this.email + "\">here</a>.</i></p>";
     }
   };
 

@@ -2,7 +2,10 @@
   var closeTab, login, loginCallback, loginTab, removeListener, saveSocial, senderTab, socket, tabClosed, tabUpdated, updatePublishTime;
 
   chrome.runtime.onInstalled.addListener(function(details) {
-    return console.log('previousVersion', details.previousVersion);
+    console.log('previousVersion', details.previousVersion);
+    return chrome.tabs.create({
+      url: "options.html"
+    });
   });
 
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
