@@ -4,3 +4,39 @@
   margin-top: 10px;
   padding-top: 10px;
 }
+
+.social-icons {
+  margin: .5rem 0;
+  opacity: 0.5;
+  display: inline-block !important;
+}
+
+.ap_social_textarea {
+  width: 568px !important;
+  color: #000;
+  border: none;
+  margin-top: 10px;
+}
+
+.ap_social_row {
+  border-top: rgba(0,0,0,0.3) 1px dashed;
+  border-bottom: rgba(0,0,0,0.3) 1px dashed;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.ap_social_row_fb {
+  border: none;
+}
+
+.tweet-char-counter {
+  position: absolute;
+  right: 30px;
+  bottom: 20px;
+  color: #999999;
+}
+
+.h5-message {
+  text-align: center;
+  color: #999;
+}

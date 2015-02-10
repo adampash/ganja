@@ -250,7 +250,7 @@ view =
   loginPrompt: (callback) ->
     $('div.editor-taglist-wrapper').after(
       """
-        <div class="row socializer-login-prompt" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+        <div class="row socializer-login-prompt">
           <div class="columns medium-12 small-12">
             <h4>In order to draft Twitter/Facebook posts, <a id="socializer-login" href="#">log into Gawker Socializer</a> with your work email</h4>
           </div>
@@ -265,8 +265,8 @@ view =
     console.log 'add fields now'
     $('input.js_taglist-input').attr('tabindex', 3)
     # $('[TabIndex*="5"]').attr('tabindex', -1)
-    iconStyle = 'style="margin: .5rem 0; opacity: 0.5; display: inline-block !important;"'
-    textareaStyle = 'class="ap_social_textarea js_taglist-input taglist-input mbn inline-block no-shadow" style="width: 568px; color: #000; border: none; margin-top: 10px;"'
+    iconStyle = ''
+    textareaStyle = 'class="ap_social_textarea js_taglist-input taglist-input mbn inline-block no-shadow"'
     # $('div.row.editor-actions').after(
     message = ""
     if canEdit
@@ -274,24 +274,24 @@ view =
         """
         <div style="position: relative;">
           #{message}
-          <div class="row collapse ap_social_row" style="border-top: rgba(0,0,0,0.3) 1px dashed; border-bottom: rgba(0,0,0,0.3) 1px dashed; margin-top: 10px; padding-top: 10px;">
+          <div class="row collapse ap_social_row">
             <div class="column">
               <span class="js_tag tag">
-                <i class="icon icon-twitter" #{iconStyle}></i>
+                <i class="icon icon-twitter social-icons" #{iconStyle}></i>
                 <div class="js_taglist taglist">
                   <span class="js_taglist-tags taglist-tags mbn no-shadow"></span>
-                  <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your words" value="" tabindex="4"></textarea>
-                  <span class="tweet-char-counter" style="position: absolute; right: 30px; bottom: 20px; color: #999999;"></span>
+                  <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your thoughts" value="" tabindex="4"></textarea>
+                  <span class="tweet-char-counter"></span>
                 </div>
               </span>
             </div>
           </div>
 
 
-          <div class="row collapse ap_social_row" style="margin-top: 10px; padding-top: 10px;">
+          <div class="row collapse ap_social_row ap_social_row_fb">
             <div class="column">
               <span class="js_tag tag">
-                <i class="icon icon-facebook" #{iconStyle}></i>
+                <i class="icon icon-facebook social-icons" #{iconStyle}></i>
                 <div class="js_taglist taglist">
                   <textarea id="ap_facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
                 </div>
@@ -301,7 +301,7 @@ view =
         </div>
         """
     else
-      content = '<h5 style="text-align: center; color: #999;">Save your first draft to edit social posts</h5>'
+      content = '<h5 class="h5-message">Save your first draft to edit social posts</h5>'
     $('div.editor-taglist-wrapper').after(content)
     $('.ap_social_row').on 'click', (el) ->
       $(el.currentTarget).find('textarea').focus()
