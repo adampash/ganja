@@ -3,8 +3,14 @@
 
   chrome.runtime.onInstalled.addListener(function(details) {
     console.log('previousVersion', details.previousVersion);
-    return chrome.tabs.create({
-      url: "options.html"
+    return chrome.storage.sync.get({
+      contact_email: ''
+    }, function(items) {
+      if (items.contact_email === '') {
+        return chrome.tabs.create({
+          url: "options.html"
+        });
+      }
     });
   });
 

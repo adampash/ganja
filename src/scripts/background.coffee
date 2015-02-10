@@ -1,6 +1,10 @@
 chrome.runtime.onInstalled.addListener (details) ->
   console.log('previousVersion', details.previousVersion)
-  chrome.tabs.create(url: "options.html")
+  chrome.storage.sync.get
+    contact_email: ''
+  , (items) ->
+    if items.contact_email is ''
+      chrome.tabs.create(url: "options.html")
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   if request

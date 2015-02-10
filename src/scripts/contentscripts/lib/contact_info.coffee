@@ -13,5 +13,5 @@ ContactInfo =
           $('.editor-inner').append(@info())
 
   info: ->
-    "<hr><p><i>Contact the author <a href=\"mailto:#{@email}\">here</a>.</i></p>"
+    "<hr><p><i>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>.</i></p>"
 

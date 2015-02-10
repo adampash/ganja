@@ -25,7 +25,7 @@
       })(this));
     },
     info: function() {
-      return "<hr><p><i>Contact the author <a href=\"mailto:" + this.email + "\">here</a>.</i></p>";
+      return "<hr><p><i>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.</i></p>";
     }
   };
 
