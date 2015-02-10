@@ -80,8 +80,8 @@ updatePublishTime = (params) ->
     error: ->
       console.log 'something went wrong saving this'
 
-socket = io("#{config.whos_editing_url()}")
-
-socket.on 'connect', ->
-  console.log 'connected'
-  console.log socket.connected
+# socket = io("#{config.whos_editing_url()}")
+# 
+# socket.on 'connect', ->
+#   console.log 'connected'
+#   console.log socket.connected

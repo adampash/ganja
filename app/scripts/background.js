@@ -1,5 +1,5 @@
 (function() {
-  var closeTab, login, loginCallback, loginTab, removeListener, saveSocial, senderTab, socket, tabClosed, tabUpdated, updatePublishTime;
+  var closeTab, login, loginCallback, loginTab, removeListener, saveSocial, senderTab, tabClosed, tabUpdated, updatePublishTime;
 
   chrome.runtime.onInstalled.addListener(function(details) {
     console.log('previousVersion', details.previousVersion);
@@ -118,13 +118,6 @@
       }
     });
   };
-
-  socket = io("" + (config.whos_editing_url()));
-
-  socket.on('connect', function() {
-    console.log('connected');
-    return console.log(socket.connected);
-  });
 
 }).call(this);
 
