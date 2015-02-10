@@ -13,7 +13,8 @@ ContactInfo =
           $('.editor-inner').append(@info())
 
   info: ->
-    "<hr><p><i>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>.</i></p>"
+    unless @email is ''
+      "<hr><p><i>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>.</i></p>"
 
 
 helper =
@@ -139,6 +140,7 @@ Socializer =
   init: () ->
     @editing = false
     @post = Post
+    clearInterval @interval if @interval?
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()

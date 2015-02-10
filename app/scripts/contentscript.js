@@ -25,7 +25,9 @@
       })(this));
     },
     info: function() {
-      return "<hr><p><i>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.</i></p>";
+      if (this.email !== '') {
+        return "<hr><p><i>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.</i></p>";
+      }
     }
   };
 
@@ -162,6 +164,9 @@
     init: function() {
       this.editing = false;
       this.post = Post;
+      if (this.interval != null) {
+        clearInterval(this.interval);
+      }
       return this.interval = setInterval((function(_this) {
         return function() {
           if (_this.editorVisible() !== _this.editing) {

@@ -6,6 +6,7 @@ Socializer =
   init: () ->
     @editing = false
     @post = Post
+    clearInterval @interval if @interval?
     @interval = setInterval =>
       unless @editorVisible() == @editing
         @editing = @editorVisible()
