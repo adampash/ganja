@@ -5,10 +5,14 @@
     info_added: false,
     init: function() {
       chrome.storage.sync.get({
-        contact_email: ''
+        contact_email: '',
+        pgp_sig: '',
+        pgp_public_key: ''
       }, (function(_this) {
         return function(items) {
-          return _this.email = items.contact_email;
+          _this.email = items.contact_email;
+          _this.pgp_sig = items.pgp_sig;
+          return _this.pgp_public_key = items.pgp_public_key;
         };
       })(this));
       return Dispatcher.on('post_refresh', (function(_this) {
@@ -25,8 +29,14 @@
       })(this));
     },
     info: function() {
+      var text;
       if (this.email !== '') {
-        return "<hr><p><i>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.</i></p>";
+        text = "<hr><p><em>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.";
+        if (this.pgp_sig !== '') {
+          text += "<br>PGP Signature: " + this.pgp_sig;
+          text += "<br><a href=\"" + this.pgp_public_key + "\" target=\"_blank\">PGP Public Key</a>";
+        }
+        return text += "</em></p>";
       }
     }
   };

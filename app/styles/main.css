@@ -18,3 +18,11 @@ body {
   border-radius: 3px;
   display: none;
 }
+
+input[type=text] {
+  width: 200px;
+}
+
+.separator {
+  margin: 10px 0;
+}
