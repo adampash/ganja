@@ -4,10 +4,20 @@
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "icons": {
-        "16": "images/icon-16.png",
-        "128": "images/icon-128.png"
+        "16": "images/icon-64.png",
+        "128": "images/icon-64.png"
     },
     "default_locale": "en",
+    "browser_action": {
+      "default_icon": {                    // optional
+        "19": "images/icon-64.png",           // optional
+        "38": "images/icon-64.png",           // optional
+        "64": "images/icon-64.png"           // optional
+        // "38": "images/icon38.png"            // optional
+      },
+      "default_title": "Kinja+",      // optional; shown in tooltip
+      "default_popup": "options.html"        // optional
+    },
     "background": {
         "scripts": [
             "scripts/config.js",
