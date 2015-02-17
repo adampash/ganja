@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "icons": {
@@ -9,14 +9,13 @@
     },
     "default_locale": "en",
     "browser_action": {
-      "default_icon": {                    // optional
-        "19": "images/icon-64.png",           // optional
-        "38": "images/icon-64.png",           // optional
-        "64": "images/icon-64.png"           // optional
-        // "38": "images/icon38.png"            // optional
-      },
-      "default_title": "Kinja+",      // optional; shown in tooltip
-      "default_popup": "options.html"        // optional
+        "default_icon": {
+            "19": "images/icon-64.png",
+            "38": "images/icon-64.png",
+            "64": "images/icon-64.png"
+        },
+        "default_title": "Kinja+",
+        "default_popup": "options.html"
     },
     "background": {
         "scripts": [
