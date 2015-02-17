@@ -31,12 +31,11 @@
     info: function() {
       var text;
       if (this.email !== '') {
-        text = "<hr><p><em>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.";
+        text = "<hr><p><em><small>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.";
         if (this.pgp_sig !== '') {
-          text += "<br>PGP Signature: " + this.pgp_sig;
-          text += "<br><a href=\"" + this.pgp_public_key + "\" target=\"_blank\">PGP Public Key</a>";
+          text += "<br>PGP: " + this.pgp_sig + " [<a href=\"" + this.pgp_public_key + "\" target=\"_blank\">public key</a>]";
         }
-        return text += "</em></p>";
+        return text += "</small></em></p>";
       }
     }
   };

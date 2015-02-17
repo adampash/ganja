@@ -18,12 +18,11 @@ ContactInfo =
 
   info: ->
     unless @email is ''
-      text = "<hr><p><em>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>."
+      text = "<hr><p><em><small>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>."
       unless @pgp_sig is ''
-        text += "<br>PGP Signature: #{@pgp_sig}"
-        text += "<br><a href=\"#{@pgp_public_key}\" target=\"_blank\">PGP Public Key</a>"
+        text += "<br>PGP: #{@pgp_sig} [<a href=\"#{@pgp_public_key}\" target=\"_blank\">public key</a>]"
 
-      text += "</em></p>"
+      text += "</small></em></p>"
 
 helper =
   retrieveWindowVariables: (variables) ->
