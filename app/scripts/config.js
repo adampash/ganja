@@ -1,6 +1,6 @@
 (function() {
   this.config = {
-    dev: true,
+    dev: false,
     socializer_url: function() {
       if (this.dev) {
         return "http://localhost:3000";
