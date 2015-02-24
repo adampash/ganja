@@ -1,49 +1,34 @@
 (function() {
-  console.log('options');
+  var save, triggerSave;
 
-  $('.pgp_sig').on('change', function() {
-    var sig;
-    sig = $(this).val();
-    return chrome.storage.sync.set({
-      pgp_sig: sig
-    }, function() {
-      $('.status').text('PGP Signature saved.').show();
-      return setTimeout(function() {
+  save = function(params, msg, callback) {
+    debugger;
+    return chrome.storage.sync.set(params, function() {
+      $('.status').text(msg).show();
+      setTimeout(function() {
         return $('.status').fadeOut(function() {
           return $(this).text('');
         });
       }, 2000);
+      if (callback != null) {
+        return callback();
+      }
     });
-  });
+  };
 
-  $('.pgp_public_key').on('change', function() {
-    var key;
-    key = $(this).val();
-    return chrome.storage.sync.set({
-      pgp_public_key: key
-    }, function() {
-      $('.status').text('PGP Public Key link saved.').show();
-      return setTimeout(function() {
-        return $('.status').fadeOut(function() {
-          return $(this).text('');
-        });
-      }, 2000);
-    });
-  });
+  triggerSave = function(el, msg) {
+    var key, params, val;
+    val = el.val();
+    key = el.attr('class');
+    msg = msg || el.data('msg');
+    params = {};
+    params[key] = val;
+    return save(params, msg);
+  };
 
-  $('.contact_email').on('change', function() {
-    var email;
-    email = $(this).val();
-    console.log(email);
-    return chrome.storage.sync.set({
-      contact_email: email
-    }, function() {
-      $('.status').text('Email saved.').show();
-      return setTimeout(function() {
-        return $('.status').fadeOut(function() {
-          return $(this).text('');
-        });
-      }, 2000);
+  $('.save-button').on('click', function() {
+    return $('.pgp_sig, .pgp_public_key, .contact_email').each(function() {
+      return triggerSave($(this), "Saved");
     });
   });
 

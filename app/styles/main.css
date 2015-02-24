@@ -36,3 +36,12 @@ input[type=text] {
 .separator {
   margin: 10px 0;
 }
+
+.save-button {
+  font-size: 14px;
+  background: #007FCB;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 2px;
+}
