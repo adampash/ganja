@@ -152,8 +152,8 @@ Socializer =
       unless @editorVisible() == @editing
         @editing = @editorVisible()
         if @editing
-          @post.refresh()
-          @initEdit()
+          @post.refresh =>
+            @initEdit()
     , 500
 
   initEdit: ->

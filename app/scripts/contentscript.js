@@ -181,8 +181,9 @@
           if (_this.editorVisible() !== _this.editing) {
             _this.editing = _this.editorVisible();
             if (_this.editing) {
-              _this.post.refresh();
-              return _this.initEdit();
+              return _this.post.refresh(function() {
+                return _this.initEdit();
+              });
             }
           }
         };
