@@ -33,7 +33,8 @@
       if (this.email !== '') {
         text = "<hr><p><em><small>Contact the author at <a href=\"mailto:" + this.email + "\">" + this.email + "</a>.";
         if (this.pgp_sig !== '') {
-          text += "<br>PGP: " + this.pgp_sig + " [<a href=\"" + this.pgp_public_key + "\" target=\"_blank\">public key</a>]";
+          text += "<br><a href=\"" + this.pgp_public_key + "\" target=\"_blank\">Public PGP key</a>";
+          text += "<br>PGP fingerprint: " + this.pgp_sig;
         }
         return text += "</small></em></p>";
       }
