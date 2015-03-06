@@ -18,9 +18,9 @@ ContactInfo =
 
   info: ->
     unless @email is ''
-      text = "<hr><p><em><small>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>."
+      text = "<div id=\"editorial_labs_contact_info\"><hr><p><em><small>Contact the author at <a href=\"mailto:#{@email}\">#{@email}</a>."
       unless @pgp_sig is ''
         text += "<br><a href=\"#{@pgp_public_key}\" target=\"_blank\">Public PGP key</a>"
         text += "<br>PGP fingerprint: #{@pgp_sig}"
 
-      text += "</small></em></p>"
+      text += "</small></em></p></div>"
