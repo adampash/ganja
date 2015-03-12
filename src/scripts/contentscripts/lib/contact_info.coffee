@@ -13,7 +13,7 @@ ContactInfo =
       unless post.permalink? or @info_added
         console.log 'should add something to the bottom of the post'
         editor_text = $('.editor-inner').text()
-        if editor_text.length is 1 and editor_text.charCodeAt(0) is 8203
+        if (editor_text.length is 1 and editor_text.charCodeAt(0) is 8203) or editor_text.length is 0
           $('.editor-inner').append(@info())
 
   info: ->
