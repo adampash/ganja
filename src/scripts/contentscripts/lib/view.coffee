@@ -18,6 +18,7 @@ view =
       chrome.runtime.sendMessage method: 'login'
 
   addFields: (canEdit, callback) ->
+    return if $('.ap_socializer_extension_fields').length > 0
     console.log 'add fields now'
     $('input.js_taglist-input').attr('tabindex', 3)
     # $('[TabIndex*="5"]').attr('tabindex', -1)
@@ -28,36 +29,38 @@ view =
     if canEdit
       content =
         """
-        <div style="position: relative;">
-          #{message}
-          <div class="row collapse ap_social_row">
-            <div class="column">
-              <span class="js_tag tag">
-                <i class="icon icon-twitter social-icons" #{iconStyle}></i>
-                <div class="js_taglist taglist">
-                  <span class="js_taglist-tags taglist-tags mbn no-shadow"></span>
-                  <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your thoughts" value="" tabindex="4"></textarea>
-                  <span class="tweet-char-counter"></span>
-                </div>
-              </span>
+        <div class="ap_socializer_extension_fields">
+          <div style="position: relative;">
+            #{message}
+            <div class="row collapse ap_social_row">
+              <div class="column">
+                <span class="js_tag tag">
+                  <i class="icon icon-twitter social-icons" #{iconStyle}></i>
+                  <div class="js_taglist taglist">
+                    <span class="js_taglist-tags taglist-tags mbn no-shadow"></span>
+                    <textarea id="tweet-box" #{textareaStyle} type="text" name="tweet" placeholder="Tweet your thoughts" value="" tabindex="4"></textarea>
+                    <span class="tweet-char-counter"></span>
+                  </div>
+                </span>
+              </div>
             </div>
-          </div>
 
 
-          <div class="row collapse ap_social_row ap_social_row_fb">
-            <div class="column">
-              <span class="js_tag tag">
-                <i class="icon icon-facebook social-icons" #{iconStyle}></i>
-                <div class="js_taglist taglist">
-                  <textarea id="ap_facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
-                </div>
-              </span>
+            <div class="row collapse ap_social_row ap_social_row_fb">
+              <div class="column">
+                <span class="js_tag tag">
+                  <i class="icon icon-facebook social-icons" #{iconStyle}></i>
+                  <div class="js_taglist taglist">
+                    <textarea id="ap_facebook-box" #{textareaStyle} type="text" name="tweet" placeholder="Facebook your feelings" value="" tabindex="4"></textarea>
+                  </div>
+                </span>
+              </div>
             </div>
           </div>
         </div>
         """
     else
-      content = '<h5 class="h5-message">Save your first draft to edit social posts</h5>'
+      content = '<div class="ap_socializer_extension_fields"><h5 class="h5-message">Save your first draft to edit social posts</h5></div>'
     $('div.editor-taglist-wrapper').after(content)
     $('.ap_social_row').on 'click', (el) ->
       $(el.currentTarget).find('textarea').focus()

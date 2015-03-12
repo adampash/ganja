@@ -21,7 +21,7 @@
           if (!((post.permalink != null) || _this.info_added)) {
             console.log('should add something to the bottom of the post');
             editor_text = $('.editor-inner').text();
-            if (editor_text.length === 1 && editor_text.charCodeAt(0) === 8203) {
+            if ((editor_text.length === 1 && editor_text.charCodeAt(0) === 8203) || editor_text.length === 0) {
               return $('.editor-inner').append(_this.info());
             }
           }
@@ -344,15 +344,18 @@
     },
     addFields: function(canEdit, callback) {
       var content, iconStyle, message, textareaStyle;
+      if ($('.ap_socializer_extension_fields').length > 0) {
+        return;
+      }
       console.log('add fields now');
       $('input.js_taglist-input').attr('tabindex', 3);
       iconStyle = '';
       textareaStyle = 'class="ap_social_textarea js_taglist-input taglist-input mbn inline-block no-shadow"';
       message = "";
       if (canEdit) {
-        content = "<div style=\"position: relative;\">\n  " + message + "\n  <div class=\"row collapse ap_social_row\">\n    <div class=\"column\">\n      <span class=\"js_tag tag\">\n        <i class=\"icon icon-twitter social-icons\" " + iconStyle + "></i>\n        <div class=\"js_taglist taglist\">\n          <span class=\"js_taglist-tags taglist-tags mbn no-shadow\"></span>\n          <textarea id=\"tweet-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Tweet your thoughts\" value=\"\" tabindex=\"4\"></textarea>\n          <span class=\"tweet-char-counter\"></span>\n        </div>\n      </span>\n    </div>\n  </div>\n\n\n  <div class=\"row collapse ap_social_row ap_social_row_fb\">\n    <div class=\"column\">\n      <span class=\"js_tag tag\">\n        <i class=\"icon icon-facebook social-icons\" " + iconStyle + "></i>\n        <div class=\"js_taglist taglist\">\n          <textarea id=\"ap_facebook-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"4\"></textarea>\n        </div>\n      </span>\n    </div>\n  </div>\n</div>";
+        content = "<div class=\"ap_socializer_extension_fields\">\n  <div style=\"position: relative;\">\n    " + message + "\n    <div class=\"row collapse ap_social_row\">\n      <div class=\"column\">\n        <span class=\"js_tag tag\">\n          <i class=\"icon icon-twitter social-icons\" " + iconStyle + "></i>\n          <div class=\"js_taglist taglist\">\n            <span class=\"js_taglist-tags taglist-tags mbn no-shadow\"></span>\n            <textarea id=\"tweet-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Tweet your thoughts\" value=\"\" tabindex=\"4\"></textarea>\n            <span class=\"tweet-char-counter\"></span>\n          </div>\n        </span>\n      </div>\n    </div>\n\n\n    <div class=\"row collapse ap_social_row ap_social_row_fb\">\n      <div class=\"column\">\n        <span class=\"js_tag tag\">\n          <i class=\"icon icon-facebook social-icons\" " + iconStyle + "></i>\n          <div class=\"js_taglist taglist\">\n            <textarea id=\"ap_facebook-box\" " + textareaStyle + " type=\"text\" name=\"tweet\" placeholder=\"Facebook your feelings\" value=\"\" tabindex=\"4\"></textarea>\n          </div>\n        </span>\n      </div>\n    </div>\n  </div>\n</div>";
       } else {
-        content = '<h5 class="h5-message">Save your first draft to edit social posts</h5>';
+        content = '<div class="ap_socializer_extension_fields"><h5 class="h5-message">Save your first draft to edit social posts</h5></div>';
       }
       $('div.editor-taglist-wrapper').after(content);
       $('.ap_social_row').on('click', function(el) {
