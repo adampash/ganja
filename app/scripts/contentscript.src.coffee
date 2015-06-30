@@ -108,7 +108,7 @@ Post =
 
   getDomain: ->
     @getBlogs (blogs) ->
-      blogs[$('button.group-blog-container span').not('.hide').text()]
+      blogs[$('button.group-blog-container span').not('.hide').text()]?.replace(/^http:/, '')
 
   getPostId: ->
     @post.id

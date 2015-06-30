@@ -127,7 +127,8 @@
     },
     getDomain: function() {
       return this.getBlogs(function(blogs) {
-        return blogs[$('button.group-blog-container span').not('.hide').text()];
+        var _ref;
+        return (_ref = blogs[$('button.group-blog-container span').not('.hide').text()]) != null ? _ref.replace(/^http:/, '') : void 0;
       });
     },
     getPostId: function() {
