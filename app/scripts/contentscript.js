@@ -126,22 +126,27 @@
       return this.post.publishTimeMillis;
     },
     getDomain: function() {
-      return this.getBlogs(function(blogs) {
-        var _ref;
-        return (_ref = blogs[$('button.group-blog-container span').not('.hide').text()]) != null ? _ref.replace(/^http:/, '') : void 0;
-      });
+      var blog;
+      blog = _.find(this.post.blogList, (function(_this) {
+        return function(blog) {
+          return blog.id === _this.post.defaultBlogId;
+        };
+      })(this));
+      return blog.canonicalHost;
     },
     getPostId: function() {
       return this.post.id;
     },
     getBlogs: function(complete) {
+      debugger;
       var blogs, index, sites, url, urls, yourBlogs, _i, _len;
       console.log('getting blogs');
       urls = [];
       sites = [];
-      yourBlogs = $('ul.myblogs .js_ownblog a');
+      yourBlogs = $('ul.myblogs a');
       if (yourBlogs.length === 0) {
         console.log('no blogs to get');
+        debugger;
         return setTimeout((function(_this) {
           return function() {
             return _this.post.getBlogs(complete);

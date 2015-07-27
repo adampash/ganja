@@ -107,19 +107,22 @@ Post =
     @post.publishTimeMillis
 
   getDomain: ->
-    @getBlogs (blogs) ->
-      blogs[$('button.group-blog-container span').not('.hide').text()]?.replace(/^http:/, '')
+    blog = _.find @post.blogList, (blog) =>
+      blog.id is @post.defaultBlogId
+    blog.canonicalHost
 
   getPostId: ->
     @post.id
 
   getBlogs: (complete) ->
+    debugger
     console.log 'getting blogs'
     urls = []
     sites = []
-    yourBlogs = $('ul.myblogs .js_ownblog a')
+    yourBlogs = $('ul.myblogs a')
     if yourBlogs.length is 0
       console.log 'no blogs to get'
+      debugger
       return setTimeout =>
         @post.getBlogs(complete)
       , 1000
