@@ -115,14 +115,12 @@ Post =
     @post.id
 
   getBlogs: (complete) ->
-    debugger
     console.log 'getting blogs'
     urls = []
     sites = []
     yourBlogs = $('ul.myblogs a')
     if yourBlogs.length is 0
       console.log 'no blogs to get'
-      debugger
       return setTimeout =>
         @post.getBlogs(complete)
       , 1000
@@ -149,16 +147,11 @@ Socializer =
   root: root
 
   init: () ->
-    @editing = false
     @post = Post
-    clearInterval @interval if @interval?
-    @interval = setInterval =>
-      unless @editorVisible() == @editing
-        @editing = @editorVisible()
-        if @editing
-          @post.refresh =>
-            @initEdit()
-    , 500
+    Dispatcher.on('editor_visible', =>
+      @post.refresh =>
+        @initEdit()
+    )
 
   initEdit: ->
     @checkLogin (logged_in) =>
@@ -216,13 +209,6 @@ Socializer =
       error: ->
       complete: ->
 
-  editorVisible: ->
-    if $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
-      Dispatcher.trigger('editor_visible')
-      true
-    else
-      false
-
   countdown: ->
     return unless $('#tweet-box').length > 0
     140 - 24 - $('#tweet-box').val().length
@@ -254,6 +240,17 @@ Socializer =
       $('#social-save-status').html("<i class=\"icon icon-#{icon} icon-prepend\" style=\"color: #{color};\"></i>#{msg}").css('color', color)
     else
       $('#social-save-status').empty()
+
+Utils =
+  init: ->
+    clearInterval @interval if @interval?
+    @interval = setInterval =>
+      if @editorVisible()
+        clearInterval @interval
+    , 500
+  editorVisible: ->
+    if $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
+      Dispatcher.trigger('editor_visible')
 
 root = config.socializer_url()
 
@@ -337,11 +334,53 @@ view =
   removeFields: ->
     console.log 'remove fields now'
 
+WordCount =
+  init: ->
+    Dispatcher.on('editor_visible', =>
+      @count_words()
+    )
+
+  count_words: ->
+    @interval = setInterval =>
+      words = $('.scribe.editor-inner.post-content')
+        .text()
+        .replace('tktk.​gawker.​com', '')
+      wc = words.split(" ").length
+      tk_match = words.match(/(tk)+/gi)
+      if tk_match?
+        tk_count = tk_match.length
+      @wc_view(wc)
+      @tk_view(tk_count)
+    , 2000
+
+  tk_view: (count=0) ->
+    if $('.tk-tracker').length is 0
+      $('.date-time-container')
+        .append('<span class="tk-tracker ganjmeta"></span>')
+    content = ''
+    if count > 0
+      content = "<b>TK count:</b> #{count}"
+    $('.tk-tracker').html(content)
+
+  wc_view: (count=0) ->
+    if $('.wc-tracker').length is 0
+      $('.date-time-container')
+        .append('<span class="wc-tracker ganjmeta"></span>')
+    content = ''
+    if count > 500
+      content = "<b>Word count:</b> #{count} "
+    if count > 2000
+      content += '<span style="color: red;">Make sure a member of the Politburo has OKed this length </span>'
+    $('.wc-tracker').html(content)
+
+
 @Dispatcher = _.clone(Backbone.Events)
 
 init = ->
   Socializer.init()
   ContactInfo.init()
+  Utils.init()
+  WordCount.init()
 
 chrome.runtime.onMessage.addListener (request, sender, callback) ->
   if request.method is 'loginComplete'

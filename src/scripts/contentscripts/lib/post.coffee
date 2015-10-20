@@ -53,14 +53,12 @@ Post =
     @post.id
 
   getBlogs: (complete) ->
-    debugger
     console.log 'getting blogs'
     urls = []
     sites = []
     yourBlogs = $('ul.myblogs a')
     if yourBlogs.length is 0
       console.log 'no blogs to get'
-      debugger
       return setTimeout =>
         @post.getBlogs(complete)
       , 1000

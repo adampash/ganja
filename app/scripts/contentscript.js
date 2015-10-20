@@ -1,5 +1,5 @@
 (function() {
-  var ContactInfo, Post, Socializer, helper, init, root, view;
+  var ContactInfo, Post, Socializer, Utils, WordCount, helper, init, root, view;
 
   ContactInfo = {
     info_added: false,
@@ -138,7 +138,6 @@
       return this.post.id;
     },
     getBlogs: function(complete) {
-      debugger;
       var blogs, index, sites, url, urls, yourBlogs, _i, _len;
       console.log('getting blogs');
       urls = [];
@@ -146,7 +145,6 @@
       yourBlogs = $('ul.myblogs a');
       if (yourBlogs.length === 0) {
         console.log('no blogs to get');
-        debugger;
         return setTimeout((function(_this) {
           return function() {
             return _this.post.getBlogs(complete);
@@ -178,23 +176,14 @@
   Socializer = {
     root: root,
     init: function() {
-      this.editing = false;
       this.post = Post;
-      if (this.interval != null) {
-        clearInterval(this.interval);
-      }
-      return this.interval = setInterval((function(_this) {
+      return Dispatcher.on('editor_visible', (function(_this) {
         return function() {
-          if (_this.editorVisible() !== _this.editing) {
-            _this.editing = _this.editorVisible();
-            if (_this.editing) {
-              return _this.post.refresh(function() {
-                return _this.initEdit();
-              });
-            }
-          }
+          return _this.post.refresh(function() {
+            return _this.initEdit();
+          });
         };
-      })(this), 500);
+      })(this));
     },
     initEdit: function() {
       return this.checkLogin((function(_this) {
@@ -283,14 +272,6 @@
         complete: function() {}
       });
     },
-    editorVisible: function() {
-      if ($('div.editor:visible').length !== 0 && $('article.post.hentry:visible').length === 0) {
-        Dispatcher.trigger('editor_visible');
-        return true;
-      } else {
-        return false;
-      }
-    },
     countdown: function() {
       if (!($('#tweet-box').length > 0)) {
         return;
@@ -330,6 +311,26 @@
         return $('#social-save-status').html("<i class=\"icon icon-" + icon + " icon-prepend\" style=\"color: " + color + ";\"></i>" + msg).css('color', color);
       } else {
         return $('#social-save-status').empty();
+      }
+    }
+  };
+
+  Utils = {
+    init: function() {
+      if (this.interval != null) {
+        clearInterval(this.interval);
+      }
+      return this.interval = setInterval((function(_this) {
+        return function() {
+          if (_this.editorVisible()) {
+            return clearInterval(_this.interval);
+          }
+        };
+      })(this), 500);
+    },
+    editorVisible: function() {
+      if ($('div.editor:visible').length !== 0 && $('article.post.hentry:visible').length === 0) {
+        return Dispatcher.trigger('editor_visible');
       }
     }
   };
@@ -398,11 +399,69 @@
     }
   };
 
+  WordCount = {
+    init: function() {
+      return Dispatcher.on('editor_visible', (function(_this) {
+        return function() {
+          return _this.count_words();
+        };
+      })(this));
+    },
+    count_words: function() {
+      return this.interval = setInterval((function(_this) {
+        return function() {
+          var tk_count, tk_match, wc, words;
+          words = $('.scribe.editor-inner.post-content').text().replace('tktk.​gawker.​com', '');
+          wc = words.split(" ").length;
+          tk_match = words.match(/(tk)+/gi);
+          if (tk_match != null) {
+            tk_count = tk_match.length;
+          }
+          _this.wc_view(wc);
+          return _this.tk_view(tk_count);
+        };
+      })(this), 2000);
+    },
+    tk_view: function(count) {
+      var content;
+      if (count == null) {
+        count = 0;
+      }
+      if ($('.tk-tracker').length === 0) {
+        $('.date-time-container').append('<span class="tk-tracker ganjmeta"></span>');
+      }
+      content = '';
+      if (count > 0) {
+        content = "<b>TK count:</b> " + count;
+      }
+      return $('.tk-tracker').html(content);
+    },
+    wc_view: function(count) {
+      var content;
+      if (count == null) {
+        count = 0;
+      }
+      if ($('.wc-tracker').length === 0) {
+        $('.date-time-container').append('<span class="wc-tracker ganjmeta"></span>');
+      }
+      content = '';
+      if (count > 500) {
+        content = "<b>Word count:</b> " + count + " ";
+      }
+      if (count > 2000) {
+        content += '<span style="color: red;">Make sure a member of the Politburo has OKed this length </span>';
+      }
+      return $('.wc-tracker').html(content);
+    }
+  };
+
   this.Dispatcher = _.clone(Backbone.Events);
 
   init = function() {
     Socializer.init();
-    return ContactInfo.init();
+    ContactInfo.init();
+    Utils.init();
+    return WordCount.init();
   };
 
   chrome.runtime.onMessage.addListener(function(request, sender, callback) {

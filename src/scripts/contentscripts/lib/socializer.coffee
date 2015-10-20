@@ -4,16 +4,11 @@ Socializer =
   root: root
 
   init: () ->
-    @editing = false
     @post = Post
-    clearInterval @interval if @interval?
-    @interval = setInterval =>
-      unless @editorVisible() == @editing
-        @editing = @editorVisible()
-        if @editing
-          @post.refresh =>
-            @initEdit()
-    , 500
+    Dispatcher.on('editor_visible', =>
+      @post.refresh =>
+        @initEdit()
+    )
 
   initEdit: ->
     @checkLogin (logged_in) =>
@@ -70,13 +65,6 @@ Socializer =
         $('#ap_facebook-box').val(data.fb_post)
       error: ->
       complete: ->
-
-  editorVisible: ->
-    if $('div.editor:visible').length != 0 and $('article.post.hentry:visible').length is 0
-      Dispatcher.trigger('editor_visible')
-      true
-    else
-      false
 
   countdown: ->
     return unless $('#tweet-box').length > 0
