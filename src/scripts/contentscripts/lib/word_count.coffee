@@ -33,7 +33,6 @@ WordCount =
     content = ''
     if count > 500
       content = "<b>Word count:</b> #{count} "
-    if count > 2000
-      content += '<span style="color: red;">Make sure a member of the Politburo has OKed this length </span>'
+    # if count > 2500
+    #   content += '<span style="color: #610200; font-size: 11px;">&nbsp;This post is over 2,500 words. Make sure a member of central edit has looked at it. </span>'
     $('.wc-tracker').html(content)
-

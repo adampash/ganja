@@ -448,9 +448,6 @@
       if (count > 500) {
         content = "<b>Word count:</b> " + count + " ";
       }
-      if (count > 2000) {
-        content += '<span style="color: red;">Make sure a member of the Politburo has OKed this length </span>';
-      }
       return $('.wc-tracker').html(content);
     }
   };
