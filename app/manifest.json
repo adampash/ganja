@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "manifest_version": 2,
     "description": "__MSG_appDescription__",
     "icons": {
@@ -31,6 +31,7 @@
         {
             "matches": [
                 "http://kinja.com/*",
+                "https://kinja.com/*",
                 "http://gawker.com/*",
                 "http://deadspin.com/*",
                 "http://jezebel.com/*",
@@ -53,8 +54,8 @@
                 "styles/socializer.css"
             ],
             "js": [
-                "scripts/config.js",
                 "scripts/jquery.js",
+                "scripts/config.js",
                 "scripts/underscore.js",
                 "scripts/backbone.js",
                 "scripts/moment.js",
