@@ -5,7 +5,7 @@
       if (this.dev) {
         return "http://localhost:3000";
       } else {
-        return "http://gawker-socializer.herokuapp.com";
+        return "https://gawker-socializer.herokuapp.com";
       }
     },
     whos_editing_url: function() {

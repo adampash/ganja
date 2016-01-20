@@ -37,7 +37,7 @@ tabUpdated = (tabId, changeInfo, tab) ->
     closeTab(tab, tabId, senderTab)
 
 closeTab = (tab, tabId, senderTab) ->
-  if tab.url.match /^http:\/\/(localhost:3000|gawker-socializer.herokuapp.com)\/login_success/
+  if tab.url.match /^https?:\/\/(localhost:3000|gawker-socializer.herokuapp.com)\/login_success/
     console.log 'now close the tab and go back to editor'
     chrome.tabs.remove(tabId)
     chrome.tabs.update(senderTab.id, active: true)
