@@ -456,7 +456,6 @@
 
   init = function() {
     Socializer.init();
-    ContactInfo.init();
     Utils.init();
     return WordCount.init();
   };

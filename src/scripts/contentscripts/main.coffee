@@ -2,7 +2,7 @@
 
 init = ->
   Socializer.init()
-  ContactInfo.init()
+  # ContactInfo.init()
   Utils.init()
   WordCount.init()
 
