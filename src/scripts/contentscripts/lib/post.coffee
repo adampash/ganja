@@ -17,7 +17,7 @@ Post =
 
     ret = {}
 
-    scriptContent = "window.postMessage({postModel: $('.editor').data('modelData')}, '*');"
+    scriptContent = "window.postMessage(JSON.parse(JSON.stringify({postModel: $('.editor').data('modelData')})), '*');"
 
     script = document.createElement('script')
     script.id = 'tmpScript'
