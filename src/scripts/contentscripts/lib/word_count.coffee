@@ -31,8 +31,8 @@ WordCount =
       $('.date-time-container')
         .append('<span class="wc-tracker ganjmeta"></span>')
     content = ''
-    if count > 500
-      content = "<b>Word count:</b> #{count} "
+    # if count > 500
+    content = "<b>Word count:</b> #{count} "
     # if count > 2500
     #   content += '<span style="color: #610200; font-size: 11px;">&nbsp;This post is over 2,500 words. Make sure a member of central edit has looked at it. </span>'
     $('.wc-tracker').html(content)

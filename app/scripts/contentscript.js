@@ -445,9 +445,7 @@
         $('.date-time-container').append('<span class="wc-tracker ganjmeta"></span>');
       }
       content = '';
-      if (count > 500) {
-        content = "<b>Word count:</b> " + count + " ";
-      }
+      content = "<b>Word count:</b> " + count + " ";
       return $('.wc-tracker').html(content);
     }
   };
